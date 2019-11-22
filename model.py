@@ -21,7 +21,6 @@ class User(db.Model):
     email = db.Column(db.String(), nullable=False, unique=True)
     password = db.Column(db.String(), nullable=False)
     address = db.Column(db.String(), nullable=True)
-    profile_picture = db.Column(db.String(), nullable=True)
 
 
     def __repr__(self):
