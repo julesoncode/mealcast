@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+    {# nav bar with logo only  #}
+    {# flash messages #}
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <div style="background-color: red; color: white">{{message}}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{# { end of flash messages} #}
+<input id='searchTextField' type="text" name="user-location" placeholder="Pick a location" required="True"><br>
+<form>
+    <input type="hidden" id="user-address-form" name="user-address">
+    <input type="hidden" id="lat-form" name="lat">
+    <input type="hidden" id="lng-form" name="lng">
+    
+    <button formaction="/meals">Find a Meal</button>
+    <p>OR<p>
+    <button formaction="/host_info">Make a Meal</button>
+</form>
+
+ <script>
+    var defaultBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(37.804840, -122.539670),
+        new google.maps.LatLng(37.712055, -122.351399 6));
+
+    var input = document.getElementById('searchTextField');
+    var options = {
+    bounds: defaultBounds,
+    types: ['address']
+    };
+
+    var autocomplete = new google.maps.places.Autocomplete(input, options);
+
+    // autocomplete.addListener('place_changed', () => {
+    //     const place = autocomplete.getPlace()
+    //     const userAdressForm = document.getElementById('user-address-form')
+    //     const latForm = document.getElementById('lat-form')
+    //     const lngForm = document.getElementById('lng-form')
+    //     userAdressForm.value = place.formatted_address
+    //     latForm.value = place.geometry.location.lat()
+    //     lngForm.value = place.geometry.location.lng()
+    // });
+</script>
+{% endblock %}
