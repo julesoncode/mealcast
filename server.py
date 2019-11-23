@@ -4,7 +4,7 @@ import os
 from jinja2 import StrictUndefined
 from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
-from model import connect_to_db, db, User, Meal, Reservation 
+from model import connect_to_db, User, Meal, Reservation
 
 from utils import get_logged_in_user, set_logged_in_user, temp_get_form_validation
 
@@ -20,12 +20,17 @@ def index_page():
 @app.route("/meals", methods=["GET"]) 
 def meals(): 
     guest_address = request.args.get('user-address')
-    guest_lat = request.args.get('lat')
-    guest_lng = request.args.get('lng')
+    guest_lat = float(request.args.get('lat'))
+    guest_lng = float(request.args.get('lng'))
+    meters = int(request.args.get('meters', 1000))
+
+    meals = Meal.nearby(meters, guest_lat, guest_lng)
     
     # TODO find meals near guest, display them on meals page 
     # TODO once guest_user selects a meal, redirect to confirmation page
-    return render_template("reserve_meal.html", meals=meals)
+    # return render_template("reserve_meal.html", meals=meals)
+    r = "\n".join([m.address for m in meals])
+    return r
 
 if __name__ == "__main__":
     app.debug = True

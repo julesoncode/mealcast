@@ -3,8 +3,8 @@ from flask import Flask
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
-from sqlalchemy import PrimaryKeyConstraint
-from geoalchemy2 import Geography
+from sqlalchemy import PrimaryKeyConstraint, func
+from geoalchemy2 import Geography, WKTElement
 
 from datetime import datetime 
 
@@ -65,6 +65,13 @@ class Meal(db.Model):
                     address={self.address} 
                     geo={self.geo}
                     servings={self.servings}>"""
+
+    @classmethod
+    def nearby(cls, meters, lat, lng):
+        loc = WKTElement("POINT(%0.8f %0.8f)" % (lng, lat))
+        meals = Meal.query.filter(func.ST_Distance(loc, Meal.geo) <= meters)
+        return meals.all()
+
 
 class Reservation(db.Model): 
 
