@@ -44,7 +44,9 @@
 
         userAdressForm.value = place.formatted_address
         latForm.value = place.geometry.location.lat()
+        console.log(latForm.value)
         lngForm.value = place.geometry.location.lng()
+        console.log(lngForm.value)
     });
 </script>
 {% endblock %}

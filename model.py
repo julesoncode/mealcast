@@ -48,7 +48,7 @@ class Meal(db.Model):
     start_time = db.Column(db.DateTime(), default = datetime.utcnow(), nullable=False)
     end_time = db.Column(db.DateTime(), default = datetime.utcnow(), nullable=False)
     address = db.Column(db.String(), nullable=False)
-    geo = db.Column(Geography(geometry_type='POINT', srid=4326))
+    geo = db.Column(Geography(geometry_type='POINT'))
     servings = db.Column(db.Integer(), nullable=False)
 
     user = relationship("User")
