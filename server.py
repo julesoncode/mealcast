@@ -46,8 +46,6 @@ def index_page():
 @app.route("/meals", methods=["GET"]) 
 def meals(): 
 
-    # TODO: move distance calculations into a function, utils.py page? 
-    # TODO: move meal query to model page? 
     guest_address = request.args.get('user-address')
     guest_lat = float(request.args.get('lat'))
     guest_lng = float(request.args.get('lng'))
@@ -55,22 +53,17 @@ def meals():
 
     meals = Meal.nearby(meters, guest_lat, guest_lng)
 
-    print(meals)
-    
-    # TODO find meals near guest, display them on meals page 
-    # TODO once guest_user selects a meal, redirect to confirmation page
-    # return render_template("reserve_meal.html", meals=meals)
-
     return render_template('meals.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'], meals=meals, address=guest_address)
 
 
 ###############################################################################################
-#                                    API MEALS PAGE                                       #
+#                                    API MEALS PROCESS                                       #
 ###############################################################################################
 
 @app.route("/api/meals", methods=["GET"])
 def api_meals(): 
-    
+    meals = {}
+
 
 ###############################################################################################
 #                                     RESERVATIONS PAGE                                       #
