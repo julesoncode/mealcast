@@ -1,0 +1,26 @@
+@font-face {
+    font-family: 'Vegan Style Personal Use Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Vegan Style Personal Use Regular'), url('Vegan Style Personal Use.woff') format('woff');
+}
+
+.navbar-light .navbar-brand {
+    color: rgb(251, 89, 96);
+}
+.navbar-brand {
+    font-family: 'Vegan Style Personal Use Regular';
+    font-size: 32pt;
+}
+
+.meal-box{
+    background: lightblue;
+    height: 140px;
+    width: 270px;
+    border: 2px solid lightblue;
+    margin: 10px;
+  }
+
+#meal-box-text{
+    padding: 10px
+}

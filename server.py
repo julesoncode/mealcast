@@ -13,24 +13,79 @@ app.secret_key = "ABC"
 app.jinja_env.undefined = StrictUndefined
 
 
+###############################################################################################
+#                                       LANDING PAGE                                          #
+###############################################################################################
+
+
 @app.route("/", methods=["GET"]) 
 def index_page():
     return render_template("index.html", api_key=os.environ['GOOGLE_MAPS_API_KEY'], user=None)
 
+
+###############################################################################################
+#                                        MEALS PAGE                                           #  
+#                   ____                                    ?~~bL                             #
+#                   z@~ b                                    |  `U,                           # 
+#                    ]@[  |                                   ]'  z@'                         #  
+#                    d@~' `|, .__     _----L___----, __, .  _t'   `@j                         #  
+#                    `@L_,   "-~ `--"~-a,           `C.  ~""O_    ._`@                        #  
+#                    q@~'   ]P       ]@[            `Y=,   `H+z_  `a@                         #  
+#                    `@L  _z@        d@               Ya     `-@b,_a'                         #  
+#                    `-@d@a'       )@[               `VL      `a@@'                           #  
+#                        aa~'   ],  .a@'                qqL  ), ./~                           #  
+#                        @@_  _z~  _d@[                 .V@  .L_d'                            #  
+#                        "~@@@'  ]@@@'        __      )@n@bza@-"                              #  
+#                        `-@zzz@@@L        )@@z     ]@@=%-"                                   #  
+#                            "~~@@@@@bz_    _a@@@@z___a@K                                     #  
+#                                "~-@@@@@@@@@@@@@@@@@@~"                                      #
+#                                    `~~~-@~~-@@~~~~~'                                        #  
+###############################################################################################
+
+
 @app.route("/meals", methods=["GET"]) 
 def meals(): 
+
+    # TODO: move distance calculations into a function, utils.py page? 
+    # TODO: move meal query to model page? 
     guest_address = request.args.get('user-address')
     guest_lat = float(request.args.get('lat'))
     guest_lng = float(request.args.get('lng'))
-    meters = int(request.args.get('meters', 1000))
+    meters = int(request.args.get('meters', 100000000)) 
 
     meals = Meal.nearby(meters, guest_lat, guest_lng)
+
+    print(meals)
     
     # TODO find meals near guest, display them on meals page 
     # TODO once guest_user selects a meal, redirect to confirmation page
     # return render_template("reserve_meal.html", meals=meals)
-    r = "\n".join([m.address for m in meals])
-    return r
+
+    return render_template('meals.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'], meals=meals, address=guest_address)
+
+
+###############################################################################################
+#                                    API MEALS PAGE                                       #
+###############################################################################################
+
+@app.route("/api/meals", methods=["GET"])
+def api_meals(): 
+    
+
+###############################################################################################
+#                                     RESERVATIONS PAGE                                       #
+###############################################################################################
+
+@app.route("/reservations", methods=["GET"])
+def reservations(): 
+
+    return render_template('reservations.html')
+
+
+###############################################################################################
+#                                     ____________ PAGE                                       #
+###############################################################################################
+
 
 if __name__ == "__main__":
     app.debug = True
