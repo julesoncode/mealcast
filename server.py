@@ -1,12 +1,15 @@
 """Mealcast Server. """
 
 import os
+import googlemaps
+
 from jinja2 import StrictUndefined
 from flask import Flask, render_template, request, flash, redirect, session, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, User, Meal, Reservation
-
 from utils import get_logged_in_user, set_logged_in_user, temp_get_form_validation
+
+api = googlemaps.Client(key=os.environ["GOOGLE_MAPS_API_KEY"])
 
 app = Flask(__name__)
 app.secret_key = "ABC"
@@ -45,15 +48,9 @@ def index_page():
 
 @app.route("/meals", methods=["GET"]) 
 def meals(): 
-
-    guest_address = request.args.get('user-address')
-    guest_lat = float(request.args.get('lat'))
-    guest_lng = float(request.args.get('lng'))
-    meters = int(request.args.get('meters', 100000000)) 
-
-    meals = Meal.nearby(meters, guest_lat, guest_lng)
-
-    return render_template('meals.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'], meals=meals, address=guest_address)
+    place_id = request.args.get('placeID')
+    
+    return render_template('meals.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'], place_id=place_id)
 
 
 ###############################################################################################
