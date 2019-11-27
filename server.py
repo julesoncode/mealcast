@@ -2,7 +2,7 @@
 
 import os
 from jinja2 import StrictUndefined
-from flask import Flask, render_template, request, flash, redirect, session
+from flask import Flask, render_template, request, flash, redirect, session, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, User, Meal, Reservation
 
@@ -62,7 +62,14 @@ def meals():
 
 @app.route("/api/meals", methods=["GET"])
 def api_meals(): 
-    meals = {}
+    guest_address = request.args.get('address')
+    guest_lat = float(request.args.get('lat'))
+    guest_lng = float(request.args.get('lng'))
+    meters = int(request.args.get('meters', 5000))
+
+    meals = Meal.nearby(meters, guest_lat, guest_lng)
+    
+    return jsonify([meal.serialize() for meal in meals])
 
 
 ###############################################################################################

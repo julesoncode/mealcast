@@ -8,7 +8,6 @@ class AddressControl extends React.Component {
         this.myRef = React.createRef();
     }
 
-    
 
     componentDidMount() {
         // bounding box around San Francisco
@@ -27,7 +26,7 @@ class AddressControl extends React.Component {
         this.autocomplete = new google.maps.places.Autocomplete(this.myRef.current, options);
         const input = this.myRef.current;
 
-        // add a listener whenever an address is picked, we propagate this to our onAddressChanged event
+        // add a listener whenever an address is picked, we propagate this to our onAddressChanged event -> DONE
         this.autocomplete.addListener('place_changed', () => {
             const place = this.autocomplete.getPlace()
             this.props.onAddressChanged(place)
@@ -165,16 +164,35 @@ MealFilters.propTypes = {
 class Meals extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { meals: [{ name: "Bob's Meal" }] };
+        this.location = null
+        this.startTime = Date.now()
+        this.state = { meals: [] };
     }
 
-    onStartTimeChangedCallback(hour, minutes) {
-        console.log(`New time set: ${hour} ${minutes}`)
+    onStartTimeChangedCallback = (hour, minutes) => {
+        this.startTime = {hour: hour, minutes: minutes}
+
+        if (this.startTime !== null && this.location !== null) {
+            this.queryMeals()
+        }
     }
 
-    onAddressChangedCallback(inputAddress) {
-        console.log(`New address set: ${inputAddress}`)
-        
+    onAddressChangedCallback = (inputAddress) => {
+        this.location = {
+            address: inputAddress.formatted_address,
+            lat: inputAddress.geometry.location.lat,
+            lng: inputAddress.geometry.location.lng,
+        }
+
+        if (this.startTime !== null && this.location !== null) {
+            this.queryMeals()
+        }
+    }
+
+    queryMeals() {
+        $.getJSON("api/meals", {address:this.location.address, lat:this.location.lat, lng:this.location.lng}, (meals) => {
+            this.setState({meals: meals})
+          });
     }
     
     render() {
