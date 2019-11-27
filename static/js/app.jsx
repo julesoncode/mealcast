@@ -1,3 +1,5 @@
+// TODO: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1
+// TODO: https://dev.to/jessicabetts/how-to-use-google-maps-api-and-react-js-26c2
 
 class AddressControl extends React.Component {
     constructor(props) {
@@ -26,7 +28,7 @@ class AddressControl extends React.Component {
         this.autocomplete = new google.maps.places.Autocomplete(this.myRef.current, options);
         const input = this.myRef.current;
 
-        // add a listener whenever an address is picked, we propagate this to our onAddressChanged event -> DONE
+        // add a listener whenever an address is picked, we propagate this to our onAddressChanged event 
         this.autocomplete.addListener('place_changed', () => {
             const place = this.autocomplete.getPlace()
             this.props.onAddressChanged(place)
@@ -34,7 +36,11 @@ class AddressControl extends React.Component {
     }
 
     render() {
-        return <input ref={this.myRef} id="address-input" />
+        var placeholder = "Pick an address"
+        if (this.props.initialAddress !== null) {
+            placeholder = this.props.initialAddress
+        }
+        return <input ref={this.myRef} placeholder={placeholder} />
     }
 }
 
@@ -145,9 +151,23 @@ class MealFilters extends React.Component {
     render() {
         return (
             <div>
-                <AddressControl onAddressChanged={this.props.onAddressChanged} />
+                <AddressControl initialAddress={this.props.initialAddress} 
+                                onAddressChanged={this.props.onAddressChanged} />
                 <DateDisply />
                 <HourControl onStartTimeChanged={this.props.onStartTimeChanged}/>
+            </div>)
+    }
+}
+
+class Meal extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    
+    render() {
+        return (
+            <div>
+                {this.props.name}
             </div>)
     }
 }
@@ -196,12 +216,54 @@ class Meals extends React.Component {
     }
     
     render() {
-        const meals = new Array()
+        const meal_components = new Array()
+
+        this.state.meals.forEach((meal) => {
+            meal_components.push(<Meal key={meal.id} name={meal.name} />)
+        })
 
         return (
-            <MealFilters
-                onStartTimeChanged={this.onStartTimeChangedCallback} 
-                onAddressChanged={this.onAddressChangedCallback}/>)
+            <div>
+                <MealFilters
+                    initialAddress={this.props.initialAddress}
+                    onStartTimeChanged={this.onStartTimeChangedCallback} 
+                    onAddressChanged={this.onAddressChangedCallback}/>
+                {meal_components}
+            </div>)
     }
 }
 
+class LandingPage extends React.Component {
+    constructor(props) {
+        super(props)
+        this.place = null
+    }
+    onAddressChangedCallback = (place) => {
+        this.place = place
+    }
+
+    goToMeals = () => {
+        window.location = '/meals?' + $.param({placeID: this.place.place_id});
+    }
+
+    goToHost = () => {
+        window.location = '/host';
+    }
+
+    render() {
+        return (
+            <div>
+                <div>
+                    <AddressControl onAddressChanged={this.onAddressChangedCallback} />
+                </div>
+                <div>
+                    <button onClick={this.goToMeals}>Find a Meal</button>
+                </div>
+                <div>Or</div>
+                <div>
+                    <button onClick={this.goToHost}>Host a Meal</button>
+                </div>
+            </div>
+        )
+    }
+}
