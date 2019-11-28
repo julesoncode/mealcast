@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, flash, redirect, session
-from model import connect_to_db, db, User, Meal, Reservation 
-
+from model import User
 
 def set_logged_in_user(user):
     if user is None:
@@ -14,7 +13,11 @@ def get_logged_in_user():
     if user_id is None:
         return None
 
-    return User.query.filter_by(user_id=user_id).first()
+    try:
+        return User.query.filter_by(user_id=user_id).first()
+    except Exception as e:
+        print(e)
+        return None
 
 def temp_get_form_validation(first_name, last_name, email, password):
     validation = False
@@ -25,4 +28,5 @@ def temp_get_form_validation(first_name, last_name, email, password):
 
             validation = True
     # BUG: returns boolean, instead of validator information 
-    return validation 
+    return validation
+
