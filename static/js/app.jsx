@@ -344,21 +344,52 @@ class RegisterUser extends React.Component {
 }
 
 class LoginUser extends React.Component {
-    constructor(props) {
-        super(props)
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      phoneNumber: "",
+      password: ""
+    };
+  }
 
-    render() {
-        return (<div>
-            <div>
-                    <button onClick={() => this.props.onRegisterRequested()}>Register Instead</button>
-                </div>
-            <div>
-            <input type="text" placeholder="Email" />
-            <input type="text" placeholder="Password" />
-            </div>
-        </div>)
-    }
+  requestLogin = () => {
+    $.post("api/login", this.state, user => {
+      this.props.onUserLoggedIn(user);
+    });
+  };
+
+  handleChange = event => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
+
+  render() {
+    return (
+      <div>
+        <div>
+          <button onClick={() => this.props.onRegisterRequested()}>
+            Register Instead
+          </button>
+        </div>
+        <div>
+          <input
+            type="text"
+            name="phoneNumber"
+            placeholder="Phone Number"
+            value={this.state.phoneNumber}
+            onChange={this.handleChange}
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={this.state.password}
+            onChange={this.handleChange}
+          />
+          <button onClick={this.requestLogin}>Log In</button>
+        </div>
+      </div>
+    );
+  }
 }
 
 class UserInfo extends React.Component {
