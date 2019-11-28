@@ -264,42 +264,44 @@ class Meals extends React.Component {
 }
 
 class LandingPage extends React.Component {
-    constructor(props) {
-        super(props)
-        this.place = null
-    }
-    onAddressChangedCallback = (place) => {
-        this.place = place
-    }
+  constructor(props) {
+    super(props);
+    this.place = null;
+  }
+  onAddressChangedCallback = place => {
+    this.place = place;
+  };
 
-    goToMeals = () => {
-        window.location = '/meals?' + $.param({
-            address: this.place.formatted_address,
-            lat: this.place.geometry.location.lat,
-            lng: this.place.geometry.location.lng,
-        });
-    }
+  goToMeals = () => {
+    window.location =
+      "/meals?" +
+      $.param({
+        address: this.place.formatted_address,
+        lat: this.place.geometry.location.lat,
+        lng: this.place.geometry.location.lng
+      });
+  };
 
-    goToHost = () => {
-        window.location = '/host';
-    }
+  goToHost = () => {
+    window.location = "/host";
+  };
 
-    render() {
-        return (
-            <div>
-                <div>
-                    <AddressControl onAddressChanged={this.onAddressChangedCallback} />
-                </div>
-                <div>
-                    <button onClick={this.goToMeals}>Find a Meal</button>
-                </div>
-                <div>Or</div>
-                <div>
-                    <button onClick={this.goToHost}>Make a Meal</button>
-                </div>
-            </div>
-        )
-    }
+  render() {
+    return (
+      <div>
+        <div>
+          <AddressControl onAddressChanged={this.onAddressChangedCallback} />
+        </div>
+        <div>
+          <button onClick={this.goToMeals}>Find a Meal</button>
+        </div>
+        <div>Or</div>
+        <div>
+          <button onClick={this.goToHost}>Make a Meal</button>
+        </div>
+      </div>
+    );
+  }
 }
 
 class RegisterUser extends React.Component {
