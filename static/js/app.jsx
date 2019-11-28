@@ -160,37 +160,35 @@ class MealFilters extends React.Component {
 }
 
 class Meal extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+  constructor(props) {
+    super(props);
+  }
 
-    goToReservation = () => {
-        window.location = '/reserve?' + $.param({
-            meal_id: this.props.meal_id,
-        });
-    }
+  goToReservation = () => {
+    window.location =
+      "/reserve?" +
+      $.param({
+        meal_id: this.props.meal_id
+      });
+  };
 
-    render() {
-        return (
-            <div>
-                <span>
-                    ID: {this.props.meal_id}
-                    Name: {this.props.name}
-                </span>
-                <span>
-                    Pickup Time:
-                    {this.props.startTime}
-                </span>
-                <span>
-                    Distance: TODO
-                </span>
-                <button onClick={this.goToReservation}>
-                    Reserve
-                </button>
-            </div>)
-    }
+  render() {
+    return (
+      <div>
+        <span>
+          ID: {this.props.meal_id}
+          Name: {this.props.name}
+        </span>
+        <span>
+          Pickup Time:
+          {this.props.startTime}
+        </span>
+        <span>Distance: TODO</span>
+        <button onClick={this.goToReservation}>Reserve</button>
+      </div>
+    );
+  }
 }
-
 
 MealFilters.propTypes = {
     // callback that notifies us when a different hour and minute has been selected in the filters
