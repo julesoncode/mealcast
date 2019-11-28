@@ -125,7 +125,7 @@ class Meal(db.Model):
         meals = Meal.query.filter(func.ST_Distance(loc, Meal.geo) <= meters) \
             .filter(Meal.start_time >= start_time) \
             .filter(Meal.end_time <= closing_datetime()) \
-            .order_by(func.ST_Distance(loc, Meal.geo) <= meters)
+            .order_by(Meal.start_time)
 
         return meals.limit(20).all()
 
