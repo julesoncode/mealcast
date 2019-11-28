@@ -48,9 +48,12 @@ def index_page():
 
 @app.route("/meals", methods=["GET"]) 
 def meals(): 
-    place_id = request.args.get('placeID')
+    # TODO verify arguments
+    address = request.args.get('address')
+    lat = request.args.get('lat')
+    lng = request.args.get('lng')
     
-    return render_template('meals.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'], place_id=place_id)
+    return render_template('meals.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'], address=address, lat=lat, lng=lng)
 
 
 ###############################################################################################
