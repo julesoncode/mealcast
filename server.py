@@ -9,6 +9,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, User, Meal, Reservation
 #  from utils import get_logged_in_user, set_logged_in_user, temp_get_form_validation
 import datetime
+import utils
 
 api = googlemaps.Client(key=os.environ["GOOGLE_MAPS_API_KEY"])
 
@@ -55,6 +56,27 @@ def meals():
     lng = request.args.get('lng')
     
     return render_template('meals.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'], address=address, lat=lat, lng=lng)
+
+@app.route("/reserve", methods=["POST"]) 
+def submit_reservation(): 
+    meal_id = request.form.get('meal_id')
+    # TODO handle null meal_id
+
+    user = utils.get_logged_in_user()
+    # TODO handle no user logged in
+
+    success = Reservation.create(meal_id, user)
+
+    print(success)
+    if success:
+        return redirect("/reservations")
+    else:
+        # TODO redirect with error
+        raise NotImplementedError()
+
+@app.route("/reservations", methods=["GET"])
+def reservations():
+    return render_template('reservations.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'])
 
 
 ###############################################################################################
