@@ -303,44 +303,68 @@ class LandingPage extends React.Component {
 }
 
 class RegisterUser extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            firstName: "",
-            lastName: "",
-            phoneNumber: "",
-            password: "",
-        }
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
+      password: ""
+    };
+  }
 
-    registerUser = () => {
-        $.post("api/register_user", this.state, (user) => {
+  registerUser = () => {
+    $.post("api/register_user", this.state, user => {
+      this.props.onUserRegistered(user);
+    });
+  };
 
-        })
-    }
+  handleChange = event => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
 
-    handleChange = (event) => {
-        this.setState({[event.target.name]: event.target.value});
-    }
-
-    render() {
-        return (
-            <div>
-                <div>
-                    <button onClick={() => this.props.onLoginRequested()}>Login Instead</button>
-                </div>
-                <div>
-                    <input type="text" name="firstName" placeholder="First Name" value={this.state.firstName} onChange={this.handleChange}/>
-                    <input type="text" name="lastName" placeholder="Last Name" value={this.state.lastName} onChange={this.handleChange}/>
-                    <input type="text" name="phoneNumber" placeholder="Phone Number" value={this.state.phoneNumber} onChange={this.handleChange}/>
-                    <input type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.handleChange}/>
-                    <button onClick={this.registerUser}>
-                        Register User
-                    </button>
-                </div>
-            </div>
-        )
-    }
+  render() {
+    return (
+      <div>
+        <div>
+          <button onClick={() => this.props.onLoginRequested()}>
+            Login Instead
+          </button>
+        </div>
+        <div>
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            value={this.state.firstName}
+            onChange={this.handleChange}
+          />
+          <input
+            type="text"
+            name="lastName"
+            placeholder="Last Name"
+            value={this.state.lastName}
+            onChange={this.handleChange}
+          />
+          <input
+            type="text"
+            name="phoneNumber"
+            placeholder="Phone Number"
+            value={this.state.phoneNumber}
+            onChange={this.handleChange}
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={this.state.password}
+            onChange={this.handleChange}
+          />
+          <button onClick={this.registerUser}>Register User</button>
+        </div>
+      </div>
+    );
+  }
 }
 
 class LoginUser extends React.Component {
