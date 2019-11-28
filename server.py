@@ -125,6 +125,8 @@ def register_user_api():
     if new_user is None:
         abort(404)
 
+    utils.set_logged_in_user(new_user)
+
     return jsonify(new_user.serialize())
     
 
