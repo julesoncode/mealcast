@@ -159,6 +159,18 @@ def login_api():
 
     return jsonify(user.serialize())
 
+@app.route("/api/meal", methods=["GET"]) 
+def meal_api():
+    meal_id = request.args.get('meal_id')
+
+    meal = Meal.get_meal_by_id(meal_id)
+
+    if meal is None:
+        abort(404)
+    
+    return jsonify(meal.serialize())
+
+
 
 ###############################################################################################
 #                                     ____________ PAGE                                       #
