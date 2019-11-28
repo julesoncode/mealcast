@@ -24,6 +24,8 @@ class User(db.Model):
     email = db.Column(db.String(), nullable=False, unique=True)
     password = db.Column(db.String(), nullable=False)
     address = db.Column(db.String(), nullable=True)
+    # TODO replace email with phone number column, use it as one for now
+    # phone_number = db.Column(db.String(), nullable=True)
 
 
     def __repr__(self):
