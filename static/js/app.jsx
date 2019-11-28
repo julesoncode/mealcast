@@ -362,49 +362,72 @@ class LoginUser extends React.Component {
 }
 
 class UserInfo extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            current: "loading",
-        }
-        this.getLoggedInUser();
+  constructor(props) {
+    super(props);
+    this.state = {
+      current: "loading"
+    };
+    this.getLoggedInUser();
+  }
+
+  getLoggedInUser() {
+    $.getJSON("api/user", null, user => {
+      this.userRegisteredOrLoggedIn(user);
+    }).fail(() => {
+      this.setState({ current: "unauthenticated-register" });
+    });
+  }
+
+  loginRequested = () => {
+    this.setState({ current: "unauthenticated-login" });
+  };
+
+  registerRequested = () => {
+    this.setState({ current: "unauthenticated-register" });
+  };
+
+  userRegisteredOrLoggedIn = user => {
+    this.setState({ current: "logged-in", user: user });
+    this.props.onUserResolved(user);
+  };
+
+  logOut = () => {
+    $.post("api/logout", null, user => {
+      this.setState({ current: "unauthenticated-register", user: null });
+      this.props.onUserResolved(null);
+    });
+  };
+
+  render() {
+    var componentToRender = null;
+
+    if (this.state.current === "logged-in") {
+      componentToRender = (
+        <div>
+          <span>Hello User {this.state.user.firstName}</span>
+          <button onClick={this.logOut}>Log Out</button>
+        </div>
+      );
+    } else if (this.state.current === "unauthenticated-register") {
+      componentToRender = (
+        <RegisterUser
+          onLoginRequested={this.loginRequested}
+          onUserRegistered={this.userRegisteredOrLoggedIn}
+        />
+      );
+    } else if (this.state.current === "unauthenticated-login") {
+      componentToRender = (
+        <LoginUser
+          onRegisterRequested={this.registerRequested}
+          onUserLoggedIn={this.userRegisteredOrLoggedIn}
+        />
+      );
+    } else {
+      // We're waiting for the ajax query to get the user so don't show anything yet
     }
 
-    getLoggedInUser() {
-        $.getJSON("api/user", null, (user) => {
-            this.setState({ current: "logged-in", user: user })
-        }).fail(() => {
-            this.setState({ current: "unauthenticated-register" })
-        });
-    }
-
-    loginRequested = () => {
-        this.setState({ current: "unauthenticated-login" })
-    }
-
-    registerRequested = () => {
-        this.setState({ current: "unauthenticated-register" })
-    }
-
-    render() {
-        var componentToRender = null;
-
-        if (this.state.current === "logged-in") {
-            componentToRender = (<div>
-                Hello User
-            </div>)
-        } else if (this.state.current === "unauthenticated-register") {
-            componentToRender = <RegisterUser onLoginRequested={this.loginRequested} />
-        } else if (this.state.current === "unauthenticated-login") {
-            componentToRender = <LoginUser onRegisterRequested={this.registerRequested} />
-        } else {
-            // We're waiting for the ajax query to get the user so don't show anything yet
-        }
-
-        return (<div>
-            {componentToRender}
-        </div>)
-    }
+    return <div>{componentToRender}</div>;
+  }
 }
 
 class Reserve extends React.Component {
