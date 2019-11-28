@@ -4,10 +4,11 @@ import os
 import googlemaps
 
 from jinja2 import StrictUndefined
-from flask import Flask, render_template, request, flash, redirect, session, jsonify
+from flask import Flask, render_template, request, flash, redirect, session, jsonify, abort
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, User, Meal, Reservation
-from utils import get_logged_in_user, set_logged_in_user, temp_get_form_validation
+#  from utils import get_logged_in_user, set_logged_in_user, temp_get_form_validation
+import datetime
 
 api = googlemaps.Client(key=os.environ["GOOGLE_MAPS_API_KEY"])
 
@@ -80,13 +81,30 @@ def api_meals():
 
 
 ###############################################################################################
-#                                     RESERVATIONS PAGE                                       #
+#                                     RESERVE PAGE                                            #
 ###############################################################################################
 
-@app.route("/reservations", methods=["GET"])
-def reservations(): 
+@app.route("/reserve", methods=["GET"]) 
+def reserve(): 
+    meal_id = request.args.get('meal_id')
+    
+    meal = Meal.query.filter_by(meal_id=meal_id).first()
+    return render_template('reserve.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'], address=meal.address)
 
-    return render_template('reservations.html')
+@app.route("/api/register_user", methods=["POST"]) 
+def register_user_api(): 
+    first_name = request.form.get('firstName')
+    last_name = request.form.get('lastName')
+    phone_number = request.form.get('phoneNumber')
+    password = request.form.get('password')
+
+    new_user = User.create_new_user(first_name, last_name, phone_number, password)
+
+    if new_user is None:
+        abort(404)
+
+    return jsonify(new_user.serialize())
+    
 
 
 ###############################################################################################
