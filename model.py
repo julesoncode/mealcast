@@ -9,7 +9,7 @@ from geoalchemy2 import Geography, WKTElement
 from datetime import datetime 
 import pytz
 
-PST = pytz.timezone('US/Pacific')
+PST = pytz.timezone('America/Los_Angeles')
 
 db = SQLAlchemy()
 
