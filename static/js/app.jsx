@@ -201,66 +201,76 @@ MealFilters.propTypes = {
 
 
 class Meals extends React.Component {
-    constructor(props) {
-        super(props);
-        this.location = {
-            address: this.props.defaultAddress,
-            lat: this.props.defaultLat,
-            lng: this.props.defaultLng,
-        }
-        this.startTime = "now"
-        this.queryMeals()
-        this.state = { meals: [] };
+  constructor(props) {
+    super(props);
+    this.location = {
+      address: this.props.defaultAddress,
+      lat: this.props.defaultLat,
+      lng: this.props.defaultLng
+    };
+    this.startTime = "now";
+    this.queryMeals();
+    this.state = { meals: [] };
+  }
+
+  onStartTimeChangedCallback = (hour, minutes) => {
+    this.startTime = { hour: hour, minutes: minutes };
+
+    if (this.startTime !== null && this.location !== null) {
+      this.queryMeals();
     }
+  };
 
-    onStartTimeChangedCallback = (hour, minutes) => {
-        this.startTime = { hour: hour, minutes: minutes }
+  onAddressChangedCallback = inputAddress => {
+    this.location = {
+      address: inputAddress.formatted_address,
+      lat: inputAddress.geometry.location.lat,
+      lng: inputAddress.geometry.location.lng
+    };
 
-        if (this.startTime !== null && this.location !== null) {
-            this.queryMeals()
-        }
+    if (this.startTime !== null && this.location !== null) {
+      this.queryMeals();
     }
+  };
 
-    onAddressChangedCallback = (inputAddress) => {
-        this.location = {
-            address: inputAddress.formatted_address,
-            lat: inputAddress.geometry.location.lat,
-            lng: inputAddress.geometry.location.lng,
-        }
+  queryMeals() {
+    const params = {
+      address: this.location.address,
+      lat: this.location.lat,
+      lng: this.location.lng,
+      startTimeHour: this.startTime.hour,
+      startTimeMinutes: this.startTime.minutes
+    };
+    $.getJSON("api/meals", params, meals => {
+      this.setState({ meals: meals });
+    });
+  }
 
-        if (this.startTime !== null && this.location !== null) {
-            this.queryMeals()
-        }
-    }
+  render() {
+    const meal_components = new Array();
 
-    queryMeals() {
-        const params = {
-            address: this.location.address,
-            lat: this.location.lat,
-            lng: this.location.lng,
-            startTime: this.startTime
-        }
-        $.getJSON("api/meals", params, (meals) => {
-            this.setState({ meals: meals })
-        });
-    }
+    this.state.meals.forEach(meal => {
+      meal_components.push(
+        <Meal
+          key={meal.meal_id}
+          meal_id={meal.meal_id}
+          name={meal.name}
+          startTime={meal.start_time}
+        />
+      );
+    });
 
-    render() {
-        const meal_components = new Array()
-
-        this.state.meals.forEach((meal) => {
-            meal_components.push(<Meal key={meal.meal_id} meal_id={meal.meal_id} name={meal.name} startTime={meal.start_time} />)
-        })
-
-        return (
-            <div>
-                <MealFilters
-                    defaultAddress={this.props.defaultAddress}
-                    onStartTimeChanged={this.onStartTimeChangedCallback}
-                    onAddressChanged={this.onAddressChangedCallback} />
-                {meal_components}
-            </div>)
-    }
+    return (
+      <div>
+        <MealFilters
+          defaultAddress={this.props.defaultAddress}
+          onStartTimeChanged={this.onStartTimeChangedCallback}
+          onAddressChanged={this.onAddressChangedCallback}
+        />
+        {meal_components}
+      </div>
+    );
+  }
 }
 
 class LandingPage extends React.Component {
