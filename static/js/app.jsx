@@ -37,8 +37,8 @@ class AddressControl extends React.Component {
 
     render() {
         var placeholder = "Pick an address"
-        if (this.props.initialAddress !== null) {
-            placeholder = this.props.initialAddress
+        if (this.props.defaultAddress !== null) {
+            placeholder = this.props.defaultAddress
         }
         return <input ref={this.myRef} placeholder={placeholder} />
     }
@@ -56,9 +56,9 @@ class DateDisply extends React.Component {
 
     render() {
         return (
-        <span>
-            Date {Date.now()}
-        </span>
+            <span>
+                Date {Date.now()}
+            </span>
         )
     }
 }
@@ -102,7 +102,7 @@ class HourControl extends React.Component {
         } else {
             d.setMinutes(30)
         }
-        
+
         // Since we want 30 minute intervals, we multiply the current hour by 2
         var start_time = d.getHours() * 2
 
@@ -113,13 +113,13 @@ class HourControl extends React.Component {
 
         // The end hour is 11PM, multiply it by 2 to get it in 30 minute intervals.
         const end_time = 23 * 2
-        
+
         // Generate the options for the select element
         const options = Array()
 
         for (var i = start_time; i <= end_time; i++) {
             const current_date = new Date(d)
-            
+
             // convert from '30 minute interval' to real time
             current_date.setHours(i / 2)
             current_date.setMinutes(i % 2 * 30)
@@ -151,10 +151,10 @@ class MealFilters extends React.Component {
     render() {
         return (
             <div>
-                <AddressControl initialAddress={this.props.initialAddress} 
-                                onAddressChanged={this.props.onAddressChanged} />
+                <AddressControl defaultAddress={this.props.defaultAddress}
+                    onAddressChanged={this.props.onAddressChanged} />
                 <DateDisply />
-                <HourControl onStartTimeChanged={this.props.onStartTimeChanged}/>
+                <HourControl onStartTimeChanged={this.props.onStartTimeChanged} />
             </div>)
     }
 }
@@ -163,11 +163,30 @@ class Meal extends React.Component {
     constructor(props) {
         super(props);
     }
-    
+
+    goToReservation = () => {
+        window.location = '/reserve?' + $.param({
+            meal_id: this.props.meal_id,
+        });
+    }
+
     render() {
         return (
             <div>
-                {this.props.name}
+                <span>
+                    ID: {this.props.meal_id}
+                    Name: {this.props.name}
+                </span>
+                <span>
+                    Pickup Time:
+                    {this.props.startTime}
+                </span>
+                <span>
+                    Distance: TODO
+                </span>
+                <button onClick={this.goToReservation}>
+                    Reserve
+                </button>
             </div>)
     }
 }
@@ -184,13 +203,18 @@ MealFilters.propTypes = {
 class Meals extends React.Component {
     constructor(props) {
         super(props);
-        this.location = null
-        this.startTime = Date.now()
+        this.location = {
+            address: this.props.defaultAddress,
+            lat: this.props.defaultLat,
+            lng: this.props.defaultLng,
+        }
+        this.startTime = "now"
+        this.queryMeals()
         this.state = { meals: [] };
     }
 
     onStartTimeChangedCallback = (hour, minutes) => {
-        this.startTime = {hour: hour, minutes: minutes}
+        this.startTime = { hour: hour, minutes: minutes }
 
         if (this.startTime !== null && this.location !== null) {
             this.queryMeals()
@@ -210,24 +234,30 @@ class Meals extends React.Component {
     }
 
     queryMeals() {
-        $.getJSON("api/meals", {address:this.location.address, lat:this.location.lat, lng:this.location.lng}, (meals) => {
-            this.setState({meals: meals})
-          });
+        const params = {
+            address: this.location.address,
+            lat: this.location.lat,
+            lng: this.location.lng,
+            startTime: this.startTime
+        }
+        $.getJSON("api/meals", params, (meals) => {
+            this.setState({ meals: meals })
+        });
     }
-    
+
     render() {
         const meal_components = new Array()
 
         this.state.meals.forEach((meal) => {
-            meal_components.push(<Meal key={meal.id} name={meal.name} />)
+            meal_components.push(<Meal key={meal.meal_id} meal_id={meal.meal_id} name={meal.name} startTime={meal.start_time} />)
         })
 
         return (
             <div>
                 <MealFilters
-                    initialAddress={this.props.initialAddress}
-                    onStartTimeChanged={this.onStartTimeChangedCallback} 
-                    onAddressChanged={this.onAddressChangedCallback}/>
+                    defaultAddress={this.props.defaultAddress}
+                    onStartTimeChanged={this.onStartTimeChangedCallback}
+                    onAddressChanged={this.onAddressChangedCallback} />
                 {meal_components}
             </div>)
     }
@@ -243,7 +273,11 @@ class LandingPage extends React.Component {
     }
 
     goToMeals = () => {
-        window.location = '/meals?' + $.param({placeID: this.place.place_id});
+        window.location = '/meals?' + $.param({
+            address: this.place.formatted_address,
+            lat: this.place.geometry.location.lat,
+            lng: this.place.geometry.location.lng,
+        });
     }
 
     goToHost = () => {
@@ -261,9 +295,138 @@ class LandingPage extends React.Component {
                 </div>
                 <div>Or</div>
                 <div>
-                    <button onClick={this.goToHost}>Host a Meal</button>
+                    <button onClick={this.goToHost}>Make a Meal</button>
                 </div>
             </div>
         )
+    }
+}
+
+class RegisterUser extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            firstName: "",
+            lastName: "",
+            phoneNumber: "",
+            password: "",
+        }
+    }
+
+    registerUser = () => {
+        $.post("api/register_user", this.state, (user) => {
+
+        })
+    }
+
+    handleChange = (event) => {
+        this.setState({[event.target.name]: event.target.value});
+    }
+
+    render() {
+        return (
+            <div>
+                <div>
+                    <button onClick={() => this.props.onLoginRequested()}>Login Instead</button>
+                </div>
+                <div>
+                    <input type="text" name="firstName" placeholder="First Name" value={this.state.firstName} onChange={this.handleChange}/>
+                    <input type="text" name="lastName" placeholder="Last Name" value={this.state.lastName} onChange={this.handleChange}/>
+                    <input type="text" name="phoneNumber" placeholder="Phone Number" value={this.state.phoneNumber} onChange={this.handleChange}/>
+                    <input type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.handleChange}/>
+                    <button onClick={this.registerUser}>
+                        Register User
+                    </button>
+                </div>
+            </div>
+        )
+    }
+}
+
+class LoginUser extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        return (<div>
+            <div>
+                    <button onClick={() => this.props.onRegisterRequested()}>Register Instead</button>
+                </div>
+            <div>
+            <input type="text" placeholder="Email" />
+            <input type="text" placeholder="Password" />
+            </div>
+        </div>)
+    }
+}
+
+class UserInfo extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            current: "loading",
+        }
+        this.getLoggedInUser();
+    }
+
+    getLoggedInUser() {
+        $.getJSON("api/user", null, (user) => {
+            this.setState({ current: "logged-in", user: user })
+        }).fail(() => {
+            this.setState({ current: "unauthenticated-register" })
+        });
+    }
+
+    loginRequested = () => {
+        this.setState({ current: "unauthenticated-login" })
+    }
+
+    registerRequested = () => {
+        this.setState({ current: "unauthenticated-register" })
+    }
+
+    render() {
+        var componentToRender = null;
+
+        if (this.state.current === "logged-in") {
+            componentToRender = (<div>
+                Hello User
+            </div>)
+        } else if (this.state.current === "unauthenticated-register") {
+            componentToRender = <RegisterUser onLoginRequested={this.loginRequested} />
+        } else if (this.state.current === "unauthenticated-login") {
+            componentToRender = <LoginUser onRegisterRequested={this.registerRequested} />
+        } else {
+            // We're waiting for the ajax query to get the user so don't show anything yet
+        }
+
+        return (<div>
+            {componentToRender}
+        </div>)
+    }
+}
+
+class Reserve extends React.Component {
+    constructor(props) {
+        super(props)
+        this.place = null
+        this.state = {
+            user: null,
+        }
+    }
+
+    setUser = (user) => {;
+        this.setState({user: user})
+    }
+
+    render() {
+        return (<div>
+            <UserInfo onUserResolved={this.setUser}/>
+            <div>
+                <div>Meal Info</div>
+                <button disabled={this.state.user === null}>Reserve</button>
+            </div>
+        </div>)
     }
 }
