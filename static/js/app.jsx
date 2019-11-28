@@ -408,7 +408,54 @@ class UserInfo extends React.Component {
 }
 
 class Reserve extends React.Component {
-    constructor(props) {
+  constructor(props) {
+    super(props);
+    let searchParams = new URLSearchParams(window.location.search);
+    const mealID = searchParams.get("meal_id");
+
+    this.state = {
+      meal: null,
+      user: null
+    };
+
+    this.getMealByID(mealID);
+  }
+
+  getMealByID = mealID => {
+    $.getJSON("/api/meal", { meal_id: mealID }).done(meal => {
+      this.setState({ meal: meal });
+    });
+  };
+
+  setUser = user => {
+    this.setState({ user: user });
+  };
+
+  render() {
+    var meal_component = null;
+    // TODO handle failed meal query
+    if (this.state.meal !== null) {
+      meal_component = (
+        <div>
+          <div>Meal ID: {this.state.meal.meal_id}</div>
+          <div>Name: {this.state.meal.name}</div>
+        </div>
+      );
+    }
+    return (
+      <div>
+        <UserInfo onUserResolved={this.setUser} />
+        <div>
+          {meal_component}
+          <form action="/reserve" method="POST">
+            <input type="hidden" name="meal_id" value={this.state.meal === null ? "" : this.state.meal.meal_id}/>
+            <button disabled={this.state.user === null}>Reserve</button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+}
         super(props)
         this.place = null
         this.state = {
