@@ -92,11 +92,26 @@ class Meal(db.Model):
                     geo={self.geo}
                     servings={self.servings}>"""
 
+
+    def serialize(self):
+        return {
+            'meal_id': self.meal_id,
+            "name": self.name,
+            "address": self.address,
+            "start_time": self.start_time.timestamp(),
+            "end_time": self.end_time.timestamp()
+        }
+
+
     @classmethod
-    def nearby(cls, meters, lat, lng):
-        loc = WKTElement("POINT(%0.8f %0.8f)" % (lng, lat))
-        meals = Meal.query.filter(func.ST_Distance(loc, Meal.geo) <= meters)
-        return meals.all()
+    def nearby(cls, meters, lat, lng, start_time):
+        loc = WKTElement("POINT(%0.8f %0.8f)" % (lat, lng)) 
+        meals = Meal.query.filter(func.ST_Distance(loc, Meal.geo) <= meters) \
+            .filter(Meal.start_time >= start_time) \
+            .filter(Meal.end_time <= utils.closing_datetime()) \
+            .order_by(func.ST_Distance(loc, Meal.geo) <= meters)
+
+        return meals.limit(20).all()
 
 
 class Reservation(db.Model): 
