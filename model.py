@@ -53,6 +53,13 @@ class User(db.Model):
             print(e)
             return None
 
+    @staticmethod
+    def try_login(phone_number, password):
+        try:
+            return User.query.filter_by(email=phone_number, password=password).one()
+        except Exception as e:
+            print(e)
+            return None
 
     def serialize(self):
         return {
