@@ -113,12 +113,12 @@ class Meal(db.Model):
         }
 
 
-    @classmethod
-    def nearby(cls, meters, lat, lng, start_time):
+    @staticmethod
+    def nearby(meters, lat, lng, start_time):
         loc = WKTElement("POINT(%0.8f %0.8f)" % (lat, lng)) 
         meals = Meal.query.filter(func.ST_Distance(loc, Meal.geo) <= meters) \
             .filter(Meal.start_time >= start_time) \
-            .filter(Meal.end_time <= utils.closing_datetime()) \
+            .filter(Meal.end_time <= closing_datetime()) \
             .order_by(func.ST_Distance(loc, Meal.geo) <= meters)
 
         return meals.limit(20).all()
@@ -150,11 +150,11 @@ def connect_to_db(app):
 
 
 def opening_datetime():
-    now = datetime.datetime.now(PST)
+    now = datetime.now(PST)
     return now.replace(hour=8, minute=0, second=0, microsecond=0)
 
 def closing_datetime():
-    now = datetime.datetime.now(PST)
+    now = datetime.now(PST)
     return now.replace(hour=23, minute=0, second=0, microsecond=0)
 
 
