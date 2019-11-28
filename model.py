@@ -123,6 +123,14 @@ class Meal(db.Model):
 
         return meals.limit(20).all()
 
+    @staticmethod
+    def get_meal_by_id(meal_id):
+        try:
+            return Meal.query.filter_by(meal_id=meal_id).one()
+        except Exception as e:
+            print(e)
+            return None
+
 
 class Reservation(db.Model): 
 
