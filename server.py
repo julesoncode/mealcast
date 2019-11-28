@@ -145,6 +145,20 @@ def logout_api():
     return "success"
 
 
+@app.route("/api/login", methods=["POST"]) 
+def login_api():
+    phone_number = request.form.get('phoneNumber')
+    password = request.form.get('password')
+
+    user = User.try_login(phone_number, password)
+
+    if user is None:
+        abort(404)
+    
+    utils.set_logged_in_user(user)
+
+    return jsonify(user.serialize())
+
 
 ###############################################################################################
 #                                     ____________ PAGE                                       #
