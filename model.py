@@ -34,6 +34,32 @@ class User(db.Model):
                     profile_picture{profile_picture}>"""
 
 
+
+    def create_new_user(first_name, last_name, phone_number, password):
+        try:
+            result = User(first_name=first_name,
+                    last_name=last_name, 
+                    email=phone_number, # TODO fix this once we change model to phone number
+                    password=password)
+
+            db.session.add(result)
+            db.session.commit()
+            
+            return result
+        except Exception as e:
+            print(e)
+            return None
+
+
+    def serialize(self):
+        return {
+            "userID": self.user_id,
+            "firstName": self.first_name,
+            "lastName": self.last_name,
+            "phoneNumber": self.email,
+        }
+    
+
 class Meal(db.Model):
 
     __tablename__ = "meals"
