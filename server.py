@@ -65,9 +65,16 @@ def api_meals():
     guest_address = request.args.get('address')
     guest_lat = float(request.args.get('lat'))
     guest_lng = float(request.args.get('lng'))
+    start_time_param = request.args.get("startTime", "now")
     meters = int(request.args.get('meters', 5000))
 
-    meals = Meal.nearby(meters, guest_lat, guest_lng)
+    start_time = None
+    if start_time_param == "now":
+        start_time = datetime.datetime.now(datetime.timezone.utc)
+    else:
+        raise NotImplementedError()
+        
+    meals = Meal.nearby(meters, guest_lat, guest_lng, start_time)
     
     return jsonify([meal.serialize() for meal in meals])
 
