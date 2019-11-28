@@ -139,6 +139,12 @@ def get_user_api():
 
     return jsonify(user.serialize())
     
+@app.route("/api/logout", methods=["POST"]) 
+def logout_api(): 
+    user = utils.set_logged_in_user(None)
+    return "success"
+
+
 
 ###############################################################################################
 #                                     ____________ PAGE                                       #
