@@ -6,8 +6,6 @@ class AddressControl extends React.Component {
     super(props);
     // since we're interacting with a non-react Google api
     // we need to use React refs to link up the underlying
-        // we need to use React refs to link up the underlying 
-    // we need to use React refs to link up the underlying
     // DOM node
     this.myRef = React.createRef();
   }
@@ -33,8 +31,6 @@ class AddressControl extends React.Component {
     );
     const input = this.myRef.current;
 
-    // add a listener whenever an address is picked, we propagate this to our onAddressChanged event
-        // add a listener whenever an address is picked, we propagate this to our onAddressChanged event 
     // add a listener whenever an address is picked, we propagate this to our onAddressChanged event
     this.autocomplete.addListener("place_changed", () => {
       const place = this.autocomplete.getPlace();
@@ -94,8 +90,6 @@ class HourControl extends React.Component {
     // 8:00..8:30..9:00..9:30........
     // To do that we check if the minute hand of the current time is
     // greater than or equal to 30.
-        // greater than or equal to 30. 
-    // greater than or equal to 30.
     // If it is, we increment the hour by 1 and set the minutes to 0
     // Otherwise we round up the minutes to 30
     // Example
@@ -145,7 +139,6 @@ HourControl.propTypes = {
   // callback that notifies us when a different hour and minute has been selected
   onStartTimeChanged: PropTypes.func.isRequired
 };
-
 
 class MealFilters extends React.Component {
   constructor(props) {
@@ -199,12 +192,11 @@ class Meal extends React.Component {
 }
 
 MealFilters.propTypes = {
-    // callback that notifies us when a different hour and minute has been selected in the filters
-    onStartTimeChanged: PropTypes.func.isRequired,
-    // callback that notifies us when a new address is picked
-    onAddressChanged: PropTypes.func.isRequired
+  // callback that notifies us when a different hour and minute has been selected in the filters
+  onStartTimeChanged: PropTypes.func.isRequired,
+  // callback that notifies us when a new address is picked
+  onAddressChanged: PropTypes.func.isRequired
 };
-
 
 class Meals extends React.Component {
   constructor(props) {
@@ -552,24 +544,26 @@ class Reserve extends React.Component {
     );
   }
 }
-        super(props)
-        this.place = null
-        this.state = {
-            user: null,
-        }
+
+class Reservations extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      reservation: null,
     }
 
-    setUser = (user) => {;
-        this.setState({user: user})
-    }
+    this.queryReservations()
+  }
 
-    render() {
-        return (<div>
-            <UserInfo onUserResolved={this.setUser}/>
-            <div>
-                <div>Meal Info</div>
-                <button disabled={this.state.user === null}>Reserve</button>
-            </div>
-        </div>)
-    }
+  queryReservations() {
+    $.getJSON("/api/reservations").done(reservation => {
+      this.setState({reservation: reservation})
+    })
+  }
+
+  render() {
+    return (<div>
+      Reservation Info
+    </div>)
+  }
 }
