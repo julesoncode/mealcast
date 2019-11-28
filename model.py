@@ -140,13 +140,34 @@ class Reservation(db.Model):
     meal_id = db.Column(db.Integer(), db.ForeignKey('meals.meal_id'), nullable=False)
     guest_user_id = db.Column(db.Integer(), db.ForeignKey('users.user_id'), nullable=False)
 
+    user = relationship("User")
+
     def __repr__(self):
 
         return f"""<meal_type={self.meal_type}
                     meal_id={self.meal_id}, 
                     guest_user_id={self.user_id}>"""
 
-    user = relationship("User")
+
+    @staticmethod
+    def create(meal_id, user):
+        try:
+            maybe_reservation = Reservation.query.filter_by(meal_id=meal_id, guest_user_id=user.user_id).first()
+
+            if maybe_reservation is not None:
+                # reservation already exists for this meal and user
+                # TODO show a nicer error 
+                return false
+
+            reservation = Reservation(meal_id=meal_id, guest_user_id=user.user_id)
+            db.session.add(reservation)
+            db.session.commit()
+            
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
 
 def connect_to_db(app):
     """Connect the database to Flask app."""
