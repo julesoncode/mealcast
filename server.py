@@ -128,7 +128,7 @@ def register_user_api():
     utils.set_logged_in_user(new_user)
 
     return jsonify(new_user.serialize())
-    
+
 
 @app.route("/api/user", methods=["GET"]) 
 def get_user_api(): 
