@@ -7,6 +7,9 @@ from sqlalchemy import PrimaryKeyConstraint, func
 from geoalchemy2 import Geography, WKTElement
 
 from datetime import datetime 
+import pytz
+
+PST = pytz.timezone('US/Pacific')
 
 db = SQLAlchemy()
 
