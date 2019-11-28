@@ -77,6 +77,7 @@ class Meal(db.Model):
     meal_id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('users.user_id'),
                         nullable=False)
+    # TODO: delete meal_type                   
     meal_type= db.Column(db.String(), nullable=False) 
 
     name = db.Column(db.String(), nullable=False)
@@ -86,6 +87,9 @@ class Meal(db.Model):
     address = db.Column(db.String(), nullable=False)
     geo = db.Column(Geography(geometry_type='POINT'))
     servings = db.Column(db.Integer(), nullable=False)
+
+    # TODO: add meal picture 
+    # meal_picture = db.Column(db.String(), nullable=True)
 
     user = relationship("User")
 
