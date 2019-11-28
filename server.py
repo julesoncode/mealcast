@@ -130,6 +130,15 @@ def register_user_api():
     return jsonify(new_user.serialize())
     
 
+@app.route("/api/user", methods=["GET"]) 
+def get_user_api(): 
+    user = utils.get_logged_in_user()
+
+    if user is None:
+        abort(404)
+
+    return jsonify(user.serialize())
+    
 
 ###############################################################################################
 #                                     ____________ PAGE                                       #
