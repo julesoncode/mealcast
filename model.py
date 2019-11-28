@@ -174,6 +174,18 @@ class Reservation(db.Model):
             print(e)
             return False
 
+    @staticmethod
+    def active_reservation_for_user(user):
+        try:
+            now = datetime.now(PST)
+            maybe_reservation = db.session.query(Reservation).join(Meal) \
+                .filter(Reservation.guest_user_id == user.user_id) \
+                .filter(Meal.start_time >= now) \
+                .filter(Meal.end_time <= closing_datetime()).first()
+        except Exception as e:
+            print(e)
+            return None
+
 
 def connect_to_db(app):
     """Connect the database to Flask app."""
