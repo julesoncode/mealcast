@@ -171,6 +171,18 @@ def meal_api():
     return jsonify(meal.serialize())
 
 
+@app.route("/api/reservations", methods=["GET"]) 
+def reservation_api():
+    user = utils.get_logged_in_user()
+
+    # TODO handle no logged in user
+
+    reservation = Reservation.active_reservation_for_user(user)
+
+    if reservation is None:
+        abort(404)
+
+    return jsonify(meal.serialize())
 
 ###############################################################################################
 #                                     ____________ PAGE                                       #
