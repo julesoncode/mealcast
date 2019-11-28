@@ -37,7 +37,7 @@ class User(db.Model):
                     profile_picture{profile_picture}>"""
 
 
-
+    @staticmethod
     def create_new_user(first_name, last_name, phone_number, password):
         try:
             result = User(first_name=first_name,
