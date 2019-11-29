@@ -80,6 +80,11 @@ def reservations():
     return render_template('reservations.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'])
 
 
+@app.route("/reserve", methods=["GET"]) 
+def reserve(): 
+    meal_id = request.args.get('meal_id')
+    return render_template('reserve.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'])
+
 ###############################################################################################
 #                                    API MEALS PROCESS                                       #
 ###############################################################################################
