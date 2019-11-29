@@ -7,11 +7,12 @@ from jinja2 import StrictUndefined
 from flask import Flask, render_template, request, flash, redirect, session, jsonify, abort
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, User, Meal, Reservation
-#  from utils import get_logged_in_user, set_logged_in_user, temp_get_form_validation
+from twilio.rest import Client
 import datetime
 import utils
 
 api = googlemaps.Client(key=os.environ["GOOGLE_MAPS_API_KEY"])
+twilio_client = Client(os.environ["TWILIO_SID"], os.environ["TWILIO_AUTH_TOKEN"])
 
 app = Flask(__name__)
 app.secret_key = "ABC"
