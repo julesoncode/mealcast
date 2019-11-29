@@ -6,12 +6,13 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import PrimaryKeyConstraint, func
 from geoalchemy2 import Geography, WKTElement
 
-from datetime import datetime 
+from datetime import datetime
 import pytz
 
 PST = pytz.timezone('America/Los_Angeles')
 
 db = SQLAlchemy()
+
 
 class User(db.Model):
 
@@ -21,35 +22,30 @@ class User(db.Model):
                         primary_key=True)
     first_name = db.Column(db.String(), nullable=False)
     last_name = db.Column(db.String(), nullable=False)
-    email = db.Column(db.String(), nullable=False, unique=True)
+    phone_number = db.Column(db.String(), nullable=False, unique=True)
     password = db.Column(db.String(), nullable=False)
     address = db.Column(db.String(), nullable=True)
-    # TODO replace email with phone number column, use it as one for now
-    # phone_number = db.Column(db.String(), nullable=True)
-
 
     def __repr__(self):
 
         return f""""<user_id={self.user_id} 
                     first_name={self.first_name} 
                     last_name={self.last_name}
-                    email={self.email}
+                    phone_number={self.phone_number}
                     password={self.password}
-                    address={self.address}
-                    profile_picture{profile_picture}>"""
-
+                    address={self.address}>"""
 
     @staticmethod
     def create_new_user(first_name, last_name, phone_number, password):
         try:
             result = User(first_name=first_name,
-                    last_name=last_name, 
-                    email=phone_number, # TODO fix this once we change model to phone number
-                    password=password)
+                          last_name=last_name,
+                          phone_number=phone_number,
+                          password=password)
 
             db.session.add(result)
             db.session.commit()
-            
+
             return result
         except Exception as e:
             print(e)
@@ -70,7 +66,7 @@ class User(db.Model):
             "lastName": self.last_name,
             "phoneNumber": self.email,
         }
-    
+
 
 class Meal(db.Model):
 
@@ -79,18 +75,20 @@ class Meal(db.Model):
     meal_id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('users.user_id'),
                         nullable=False)
-    # TODO: delete meal_type                   
-    meal_type= db.Column(db.String(), nullable=False) 
+    # TODO: delete meal_type
+    meal_type = db.Column(db.String(), nullable=False)
 
     name = db.Column(db.String(), nullable=False)
     description = db.Column(db.String(), nullable=False)
-    start_time = db.Column(db.DateTime(), default = datetime.utcnow(), nullable=False)
-    end_time = db.Column(db.DateTime(), default = datetime.utcnow(), nullable=False)
+    start_time = db.Column(
+        db.DateTime(), default=datetime.utcnow(), nullable=False)
+    end_time = db.Column(
+        db.DateTime(), default=datetime.utcnow(), nullable=False)
     address = db.Column(db.String(), nullable=False)
     geo = db.Column(Geography(geometry_type='POINT'))
     servings = db.Column(db.Integer(), nullable=False)
 
-    # TODO: add meal picture 
+    # TODO: add meal picture
     # meal_picture = db.Column(db.String(), nullable=True)
 
     user = relationship("User")
@@ -108,7 +106,6 @@ class Meal(db.Model):
                     geo={self.geo}
                     servings={self.servings}>"""
 
-
     def serialize(self):
         return {
             'meal_id': self.meal_id,
@@ -118,10 +115,9 @@ class Meal(db.Model):
             "end_time": self.end_time.timestamp()
         }
 
-
     @staticmethod
     def nearby(meters, lat, lng, start_time):
-        loc = WKTElement("POINT(%0.8f %0.8f)" % (lat, lng)) 
+        loc = WKTElement("POINT(%0.8f %0.8f)" % (lat, lng))
         meals = Meal.query.filter(func.ST_Distance(loc, Meal.geo) <= meters) \
             .filter(Meal.start_time >= start_time) \
             .filter(Meal.end_time <= closing_datetime()) \
@@ -138,13 +134,16 @@ class Meal(db.Model):
             return None
 
 
-class Reservation(db.Model): 
+class Reservation(db.Model):
 
     __tablename__ = "reservations"
 
-    reservation_id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
-    meal_id = db.Column(db.Integer(), db.ForeignKey('meals.meal_id'), nullable=False)
-    guest_user_id = db.Column(db.Integer(), db.ForeignKey('users.user_id'), nullable=False)
+    reservation_id = db.Column(
+        db.Integer(), autoincrement=True, primary_key=True)
+    meal_id = db.Column(db.Integer(), db.ForeignKey(
+        'meals.meal_id'), nullable=False)
+    guest_user_id = db.Column(db.Integer(), db.ForeignKey(
+        'users.user_id'), nullable=False)
 
     user = relationship("User")
     meal = relationship("Meal")
@@ -154,7 +153,6 @@ class Reservation(db.Model):
         return f"""<reservation_id={self.reservation_id}
                     meal_id={self.meal_id},
                     guest_user_id={self.guest_user_id}>"""
-
 
     def serialize(self):
         return {
@@ -170,10 +168,11 @@ class Reservation(db.Model):
 
             if maybe_reservation is not None:
                 # reservation already exists for this meal and user
-                # TODO show a nicer error 
+                # TODO show a nicer error
                 return False
 
-            reservation = Reservation(meal_id=meal_id, guest_user_id=user.user_id)
+            reservation = Reservation(
+                meal_id=meal_id, guest_user_id=user.user_id)
             db.session.add(reservation)
             db.session.commit()
 
@@ -215,6 +214,7 @@ def connect_to_db(app):
 def opening_datetime():
     now = datetime.now(PST)
     return now.replace(hour=8, minute=0, second=0, microsecond=0)
+
 
 def closing_datetime():
     now = datetime.now(PST)
