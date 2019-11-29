@@ -23,7 +23,8 @@ class User(db.Model):
                         primary_key=True)
     first_name = db.Column(db.String(), nullable=False)
     last_name = db.Column(db.String(), nullable=False)
-    phone_number = db.Column(db.String(), nullable=False, unique=True)
+    email = db.Column(db.String(), nullable=False, unique=True)
+    phone_number = db.Column(db.String(), nullable=False, unique=False)
     password = db.Column(db.String(), nullable=False)
     address = db.Column(db.String(), nullable=True)
 
@@ -37,10 +38,11 @@ class User(db.Model):
                     address={self.address}>"""
 
     @staticmethod
-    def create_new_user(first_name, last_name, phone_number, password):
+    def create_new_user(first_name, last_name, email, phone_number, password):
         try:
             result = User(first_name=first_name,
                           last_name=last_name,
+                          email=email,
                           phone_number=phone_number,
                           password=password)
 
@@ -53,9 +55,9 @@ class User(db.Model):
             return None
 
     @staticmethod
-    def try_login(phone_number, password):
+    def try_login(email, password):
         try:
-            return User.query.filter_by(email=phone_number, password=password).one()
+            return User.query.filter_by(email=email, password=password).one()
         except Exception as e:
             print(e)
             return None
@@ -65,7 +67,8 @@ class User(db.Model):
             "userID": self.user_id,
             "firstName": self.first_name,
             "lastName": self.last_name,
-            "phoneNumber": self.email,
+            "email": self.email,
+            "phoneNumber": self.phone_number,
         }
 
 
@@ -74,23 +77,14 @@ class Meal(db.Model):
     __tablename__ = "meals"
 
     meal_id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('users.user_id'),
-                        nullable=False)
-    # TODO: delete meal_type
-    meal_type = db.Column(db.String(), nullable=False)
-
+    user_id = db.Column(db.Integer(), db.ForeignKey('users.user_id'), nullable=False)
     name = db.Column(db.String(), nullable=False)
     description = db.Column(db.String(), nullable=False)
-    start_time = db.Column(
-        db.DateTime(), default=datetime.utcnow(), nullable=False)
-    end_time = db.Column(
-        db.DateTime(), default=datetime.utcnow(), nullable=False)
+    pickup_time = db.Column(db.DateTime(), nullable=False)
     address = db.Column(db.String(), nullable=False)
     geo = db.Column(Geography(geometry_type='POINT'))
     servings = db.Column(db.Integer(), nullable=False)
-
-    # TODO: add meal picture
-    # meal_picture = db.Column(db.String(), nullable=True)
+    picture_url = db.Column(db.String(), nullable=True)
 
     user = relationship("User")
 
@@ -112,17 +106,16 @@ class Meal(db.Model):
             'meal_id': self.meal_id,
             "name": self.name,
             "address": self.address,
-            "start_time": self.start_time.timestamp(),
-            "end_time": self.end_time.timestamp()
+            "pickupTime": self.pickup_time.timestamp(),
         }
 
     @staticmethod
     def nearby(meters, lat, lng, start_time):
         loc = WKTElement("POINT(%0.8f %0.8f)" % (lat, lng))
         meals = Meal.query.filter(func.ST_Distance(loc, Meal.geo) <= meters) \
-            .filter(Meal.start_time >= start_time) \
-            .filter(Meal.end_time <= closing_datetime()) \
-            .order_by(Meal.start_time)
+            .filter(Meal.pickup_time >= start_time) \
+            .filter(Meal.pickup_time <= closing_datetime()) \
+            .order_by(Meal.pickup_time)
 
         return meals.limit(20).all()
 
@@ -180,7 +173,7 @@ class Reservation(db.Model):
             twilio_client.messages.create(
                 body=f'New Reservation: http://0.0.0.0:5000/meal/meal_id={meal_id}',
                 from_='+14154231357',
-                to=user.email)
+                to=user.phone_number)
 
             return True
         except Exception as e:
@@ -194,8 +187,8 @@ class Reservation(db.Model):
             # This query tries to find any reservations made within today's time range
             maybe_reservation = db.session.query(Reservation).join(Meal) \
                 .filter(Reservation.guest_user_id == user.user_id) \
-                .filter(Meal.start_time >= opening_datetime()) \
-                .filter(Meal.end_time <= closing_datetime()).one()
+                .filter(Meal.pickup_time >= opening_datetime()) \
+                .filter(Meal.pickup_time <= closing_datetime()).one()
 
             return maybe_reservation
         except Exception as e:
