@@ -164,19 +164,24 @@ class Reservation(db.Model):
         }
 
     @staticmethod
-    def create(meal_id, user):
+    def create(twilio_client, meal_id, user):
         try:
-            maybe_reservation = Reservation.query.filter_by(meal_id=meal_id, guest_user_id=user.user_id).first()
+            maybe_reservation = Reservation.active_reservation_for_user(user)
 
             if maybe_reservation is not None:
                 # reservation already exists for this meal and user
                 # TODO show a nicer error 
-                return false
+                return False
 
             reservation = Reservation(meal_id=meal_id, guest_user_id=user.user_id)
             db.session.add(reservation)
             db.session.commit()
-            
+
+            twilio_client.messages.create(
+                body=f'New Reservation: http://0.0.0.0:5000/meal/meal_id={meal_id}',
+                from_='+14154231357',
+                to=user.email)
+
             return True
         except Exception as e:
             print(e)
