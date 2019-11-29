@@ -190,11 +190,14 @@ class Reservation(db.Model):
     @staticmethod
     def active_reservation_for_user(user):
         try:
-            now = datetime.now(PST)
+            # A user can only make one reservation per day
+            # This query tries to find any reservations made within today's time range
             maybe_reservation = db.session.query(Reservation).join(Meal) \
                 .filter(Reservation.guest_user_id == user.user_id) \
-                .filter(Meal.start_time >= now) \
-                .filter(Meal.end_time <= closing_datetime()).first()
+                .filter(Meal.start_time >= opening_datetime()) \
+                .filter(Meal.end_time <= closing_datetime()).one()
+
+            return maybe_reservation
         except Exception as e:
             print(e)
             return None
