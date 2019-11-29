@@ -180,10 +180,13 @@ class Meal extends React.Component {
           ID: {this.props.meal_id}
           Name: {this.props.name}
         </span>
-        <span>
-          Pickup Time:
-          {this.props.startTime}
-        </span>
+        <div>
+          Pick-up&nbsp;
+          {moment
+            .utc(parseInt(this.props.startTime * 1000))
+            .local()
+            .fromNow()}
+        </div>
         <span>Distance: TODO</span>
         <button onClick={this.goToReservation}>Reserve</button>
       </div>
