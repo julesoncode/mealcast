@@ -6,11 +6,13 @@ import datetime
 PST = pytz.timezone('America/Los_Angeles')
 UTC = pytz.timezone('UTC')
 
+
 def set_logged_in_user(user):
     if user is None:
         session["logged-in-user-id"] = None
-    else:    
+    else:
         session["logged-in-user-id"] = user.user_id
+
 
 def get_logged_in_user():
     user_id = session.get("logged-in-user-id")
@@ -24,18 +26,20 @@ def get_logged_in_user():
         print(e)
         return None
 
+
 def temp_get_form_validation(first_name, last_name, email, password):
     validation = False
     form_vars = [first_name, last_name, email, password]
 
-    for form_var in form_vars: 
+    for form_var in form_vars:
         if form_var.isalpha() and (len(form_var) > 4 and len(form_var) <= 25):
 
             validation = True
-    # BUG: returns boolean, instead of validator information 
+    # BUG: returns boolean, instead of validator information
     return validation
 
 
 def datetime_from_hour_and_minute(hour, minute):
-    pst_time = PST.localize(datetime.datetime.now()).replace(hour=hour, minute=minute, second=0, microsecond=0)
+    pst_time = PST.localize(datetime.datetime.now()).replace(
+        hour=hour, minute=minute, second=0, microsecond=0)
     return UTC.normalize(pst_time)
