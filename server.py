@@ -66,7 +66,7 @@ def submit_reservation():
     user = utils.get_logged_in_user()
     # TODO handle no user logged in
 
-    success = Reservation.create(meal_id, user)
+    success = Reservation.create(twilio_client, meal_id, user)
 
     print(success)
     if success:
