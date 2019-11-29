@@ -147,13 +147,21 @@ class Reservation(db.Model):
     guest_user_id = db.Column(db.Integer(), db.ForeignKey('users.user_id'), nullable=False)
 
     user = relationship("User")
+    meal = relationship("Meal")
 
     def __repr__(self):
 
-        return f"""<meal_type={self.meal_type}
-                    meal_id={self.meal_id}, 
-                    guest_user_id={self.user_id}>"""
+        return f"""<reservation_id={self.reservation_id}
+                    meal_id={self.meal_id},
+                    guest_user_id={self.guest_user_id}>"""
 
+
+    def serialize(self):
+        return {
+            "reservation_id": self.reservation_id,
+            "user": self.user.serialize(),
+            "meal": self.meal.serialize(),
+        }
 
     @staticmethod
     def create(meal_id, user):
