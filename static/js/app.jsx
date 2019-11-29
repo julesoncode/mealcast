@@ -256,7 +256,7 @@ class Meals extends React.Component {
           key={meal.meal_id}
           meal_id={meal.meal_id}
           name={meal.name}
-          startTime={meal.start_time}
+          startTime={meal.pickupTime}
         />
       );
     });
@@ -322,7 +322,8 @@ class RegisterUser extends React.Component {
       firstName: "",
       lastName: "",
       phoneNumber: "",
-      password: ""
+      password: "",
+      email: ""
     };
   }
 
@@ -361,6 +362,13 @@ class RegisterUser extends React.Component {
           />
           <input
             type="text"
+            name="email"
+            placeholder="Email"
+            value={this.state.email}
+            onChange={this.handleChange}
+          />
+          <input
+            type="text"
             name="phoneNumber"
             placeholder="Phone Number"
             value={this.state.phoneNumber}
@@ -384,7 +392,7 @@ class LoginUser extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      phoneNumber: "",
+      email: "",
       password: ""
     };
   }
@@ -410,8 +418,8 @@ class LoginUser extends React.Component {
         <div>
           <input
             type="text"
-            name="phoneNumber"
-            placeholder="Phone Number"
+            name="email"
+            placeholder="Email"
             value={this.state.phoneNumber}
             onChange={this.handleChange}
           />
