@@ -539,7 +539,11 @@ class Reserve extends React.Component {
         <div>
           {meal_component}
           <form action="/reserve" method="POST">
-            <input type="hidden" name="meal_id" value={this.state.meal === null ? "" : this.state.meal.meal_id}/>
+            <input
+              type="hidden"
+              name="meal_id"
+              value={this.state.meal === null ? "" : this.state.meal.meal_id}
+            />
             <button disabled={this.state.user === null}>Reserve</button>
           </form>
         </div>
@@ -550,23 +554,30 @@ class Reserve extends React.Component {
 
 class Reservations extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      reservation: null,
-    }
+      reservation: null
+    };
 
-    this.queryReservations()
+    this.queryReservations();
   }
 
   queryReservations() {
     $.getJSON("/api/reservations").done(reservation => {
-      this.setState({reservation: reservation})
-    })
+      this.setState({ reservation: reservation });
+    });
   }
 
   render() {
-    return (<div>
-      Reservation Info
-    </div>)
+    var reservation_details = null;
+    if (this.state.reservation !== null) {
+      // TODO style this better
+      reservation_details = <div>{this.state.reservation.meal.name}</div>;
+    }
+    return (
+    <div>
+      {reservation_details}
+      <a href="/">Go Home</a>
+    </div>);
   }
 }
