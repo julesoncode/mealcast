@@ -94,14 +94,16 @@ def api_meals():
     guest_address = request.args.get('address')
     guest_lat = float(request.args.get('lat'))
     guest_lng = float(request.args.get('lng'))
-    start_time_param = request.args.get("startTime", "now")
+    start_time_hour = int(request.args.get("startTimeHour", 0))
+    start_time_minutes = int(request.args.get("startTimeMinutes", 0))
     meters = int(request.args.get('meters', 5000))
 
     start_time = None
-    if start_time_param == "now":
+    # 0 hour and 0 minutes is a special value that means from right now
+    if start_time_hour == 0 and start_time_minutes == 0:
         start_time = datetime.datetime.now(datetime.timezone.utc)
     else:
-        raise NotImplementedError()
+        start_time = utils.datetime_from_hour_and_minute(start_time_hour, start_time_minutes)
         
     meals = Meal.nearby(meters, guest_lat, guest_lng, start_time)
     
