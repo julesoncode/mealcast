@@ -10,6 +10,7 @@ from datetime import datetime
 import pytz
 
 PST = pytz.timezone('America/Los_Angeles')
+UTC = pytz.timezone('UTC')
 
 db = SQLAlchemy()
 
@@ -212,13 +213,13 @@ def connect_to_db(app):
 
 
 def opening_datetime():
-    now = datetime.now(PST)
-    return now.replace(hour=8, minute=0, second=0, microsecond=0)
+    now = PST.normalize(datetime.now(UTC))
+    return UTC.normalize(now.replace(hour=8, minute=0, second=0, microsecond=0))
 
 
 def closing_datetime():
-    now = datetime.now(PST)
-    return now.replace(hour=23, minute=0, second=0, microsecond=0)
+    now = PST.normalize(datetime.now(UTC))
+    return UTC.normalize(now.replace(hour=23, minute=0, second=0, microsecond=0))
 
 
 if __name__ == "__main__":
