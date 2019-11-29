@@ -118,10 +118,11 @@ def api_meals():
 def register_user_api(): 
     first_name = request.form.get('firstName')
     last_name = request.form.get('lastName')
+    email = request.form.get('email')
     phone_number = request.form.get('phoneNumber')
     password = request.form.get('password')
 
-    new_user = User.create_new_user(first_name, last_name, phone_number, password)
+    new_user = User.create_new_user(first_name, last_name, email, phone_number, password)
 
     if new_user is None:
         abort(404)
@@ -148,10 +149,10 @@ def logout_api():
 
 @app.route("/api/login", methods=["POST"]) 
 def login_api():
-    phone_number = request.form.get('phoneNumber')
+    email = request.form.get('email')
     password = request.form.get('password')
 
-    user = User.try_login(phone_number, password)
+    user = User.try_login(email, password)
 
     if user is None:
         abort(404)
