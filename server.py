@@ -114,13 +114,6 @@ def api_meals():
 #                                     RESERVE PAGE                                            #
 ###############################################################################################
 
-@app.route("/reserve", methods=["GET"]) 
-def reserve(): 
-    meal_id = request.args.get('meal_id')
-    
-    meal = Meal.query.filter_by(meal_id=meal_id).first()
-    return render_template('reserve.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'], address=meal.address)
-
 @app.route("/api/register_user", methods=["POST"]) 
 def register_user_api(): 
     first_name = request.form.get('firstName')
