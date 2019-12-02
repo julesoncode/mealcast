@@ -102,11 +102,14 @@ class Meal(db.Model):
                     servings={self.servings}>"""
 
     def serialize(self):
+        serialized_reservations = [r.serialize() for r in self.reservations]
         return {
             'meal_id': self.meal_id,
             "name": self.name,
             "address": self.address,
             "pickupTime": self.pickup_time.timestamp(),
+            "servings": self.servings,
+            "reservations": serialized_reservations,
         }
 
     @staticmethod
