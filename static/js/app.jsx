@@ -505,7 +505,7 @@ class UserInfo extends React.Component {
 class Reserve extends React.Component {
   constructor(props) {
     super(props);
-    let searchParams = new URLSearchParams(window.location.search);
+    const searchParams = new URLSearchParams(window.location.search);
     const mealID = searchParams.get("meal_id");
 
     this.state = {
