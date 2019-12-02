@@ -87,6 +87,7 @@ class Meal(db.Model):
     picture_url = db.Column(db.String(), nullable=True)
 
     user = relationship("User")
+    reservations = relationship("Reservation")
 
     def __repr__(self):
 
