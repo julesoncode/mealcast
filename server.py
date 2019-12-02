@@ -5,7 +5,7 @@
 import os
 import googlemaps 
 from jinja2 import StrictUndefined
-from flask import Flask, render_template, request, flash, redirect, session, jsonify, abort
+from flask import Flask, render_template, request, flash, redirect, session, jsonify, abort, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, User, Meal, Reservation
 from twilio.rest import Client
@@ -173,7 +173,7 @@ def meal_events_api():
 
 
 @app.route("/host", methods=["GET"])
-def host(): 
+def host():
     return render_template("host.html", api_key=os.environ['GOOGLE_MAPS_API_KEY'])
 
 
@@ -193,8 +193,32 @@ def host_meal_process():
     pickup_time = utils.datetime_from_hour_and_minute(pick_up_hour, pick_up_minute)
 
     new_meal = Meal.create_new_meal(user, name, description, pickup_time, address, lat, lng, servings)
+    
+    return redirect(url_for(".host_meal_details", meal_id=new_meal.meal_id))
 
-    return render_template('host_dashboard.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'])
+
+@app.route("/host/meal", methods=["GET"])
+def host_meal_details():
+    return render_template('host_meal_details.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'])
+
+@app.route("/api/host/meal/", methods=["GET"])
+def host_meal_api():
+
+    user = utils.get_logged_in_user()
+    meal_id = int(request.args.get('meal_id'))
+
+    meal = Meal.get_meal_by_id(meal_id)
+
+    # TODO better error reporting
+    if meal is None:
+        abort(404)
+
+    # make sure the meal's user ID is the same as the logged in user
+    # TODO better error reporting
+    if meal.user_id != user.user_id:
+        abort(400)
+
+    return jsonify(meal.serialize())
 
     
 if __name__ == "__main__":
