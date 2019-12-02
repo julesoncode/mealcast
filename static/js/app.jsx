@@ -639,7 +639,7 @@ class MakeMeal extends React.Component {
 
   onSeeDetails = meal => {
     window.location =
-      "/host/details?" +
+      "/host/meal?" +
       $.param({
         meal_id: meal.meal_id
       });
