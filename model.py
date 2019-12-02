@@ -127,6 +127,16 @@ class Meal(db.Model):
             print(e)
             return None
 
+    @staticmethod
+    def has_more_servings(meal_id):
+        try:
+            count = db.session.query(func.count(Reservation.meal_id)).filter_by(
+                meal_id=meal_id).scalar()
+            return Meal.query.filter_by(meal_id=meal_id).filter(Meal.servings > count).first() != None
+        except Exception as e:
+            print(e)
+            return False
+
 
 class Reservation(db.Model):
 
