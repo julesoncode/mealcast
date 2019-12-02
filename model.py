@@ -119,7 +119,7 @@ class Meal(db.Model):
         return serialized
 
     @staticmethod
-    def create_new_meal(user, name, description, pickup_time, address, lat, lng, servings):
+    def create_new_meal(user, name, description, pickup_time, address, lat, lng, servings, picture_url):
         try:
             result = Meal(user_id=user.user_id,
                           name=name,
@@ -127,7 +127,8 @@ class Meal(db.Model):
                           pickup_time=pickup_time,
                           address=address,
                           geo=WKTElement("POINT(%0.8f %0.8f)" % (lat, lng)),
-                          servings=servings)
+                          servings=servings,
+                          picture_url=picture_url)
 
             db.session.add(result)
             db.session.commit()
