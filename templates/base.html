@@ -24,11 +24,14 @@
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
             <!-- CSS Link -->
-            <link rel="stylesheet" href="static/main.css" />
+            <link rel="stylesheet" href="/static/css/main.css" />
         {% endblock %}
         </head>
-        <body>
-            {% block content %}
-            {% endblock %}
+        <body> 
+            <div class="container">
+                    <nav class="d-inline-flex justify-content-center col-12"><span class="navbar-text logo">Mealcast</span></nav>
+                    {% block content %}
+                    {% endblock %}
+            </div>
         </body>
     </html>
