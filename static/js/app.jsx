@@ -577,15 +577,182 @@ class Reservations extends React.Component {
   }
 
   render() {
-    var reservation_details = null;
-    if (this.state.reservation !== null) {
-      // TODO style this better
-      reservation_details = <div>{this.state.reservation.meal.name}</div>;
-    }
+    var reservation_details = <div>TODO</div>;
+    // TODO print details
+    // if (this.state.reservation !== null) {
+    //
+    //   reservation_details = <div>{this.state.reservation.meal.name}</div>;
+    // }
     return (
-    <div>
-      {reservation_details}
-      <a href="/">Go Home</a>
-    </div>);
+      <div>
+        {reservation_details}
+        <a href="/">Go Home</a>
+      </div>
+    );
+  }
+}
+
+class MakeMeal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      previousMeals: [],
+      upcomingMeals: [],
+      meal: null,
+      mealName: "",
+      mealDescription: "",
+      address: "",
+      hour: 0,
+      minute: 0,
+      lat: "",
+      lng: "",
+      mealServings: ""
+    };
+
+    this.queryMealEvents();
+  }
+
+  queryMealEvents = () => {
+    $.getJSON("/api/meal_events", null, mealEvents => {
+      this.setState({
+        previousMeals: mealEvents.previous_meal_events,
+        upcomingMeals: mealEvents.upcoming_meal_events
+      });
+    }).fail(e => {
+      console.log(e);
+    });
+  };
+
+  onAddressChangedCallback = place => {
+    this.setState({
+      address: place.formatted_address,
+      lat: place.geometry.location.lat(),
+      lng: place.geometry.location.lng()
+    });
+  };
+
+  onStartTimeChangedCallback = (hour, minute) => {
+    this.setState({ hour: hour, minute: minute });
+  };
+
+  setUser() {}
+
+  handleChange = event => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
+
+  onSeeDetails = meal => {
+    window.location =
+      "/host/details?" +
+      $.param({
+        meal_id: meal.meal_id
+      });
+  };
+
+  render = () => {
+    const upcomingMeals = [];
+    const previousMeals = [];
+
+    this.state.upcomingMeals.forEach(meal => {
+      upcomingMeals.push(
+        <HostMealEvent
+          key={meal.meal_id}
+          meal={meal}
+          seeDetailsEvent={this.onSeeDetails}
+        />
+      );
+    });
+
+    this.state.previousMeals.forEach(meal => {
+      previousMeals.push(<HostMealEvent key={meal.meal_id} meal={meal} />);
+    });
+
+    return (
+      <div>
+        <UserInfo onUserResolved={this.setUser} />
+        <div>
+          Current Meals:
+          {upcomingMeals}
+        </div>
+        <AddressControl onAddressChanged={this.onAddressChangedCallback} />
+        <span>
+          Pickup time
+          <HourControl onStartTimeChanged={this.onStartTimeChangedCallback} />
+        </span>
+        <form action="/host" method="POST">
+          <input type="hidden" name="hour" value={this.state.hour} />
+          <input type="hidden" name="minute" value={this.state.minute} />
+          <input type="hidden" name="address" value={this.state.address} />
+          <input type="hidden" name="lat" value={this.state.lat} />
+          <input type="hidden" name="lng" value={this.state.lng} />
+          <input
+            type="text"
+            name="mealName"
+            placeholder="Title"
+            value={this.state.mealName}
+            onChange={this.handleChange}
+          />
+          <input
+            type="text"
+            name="mealDescription"
+            placeholder="Description"
+            value={this.state.mealDescription}
+            onChange={this.handleChange}
+          />
+          <input
+            type="text"
+            name="mealServings"
+            placeholder="Servings"
+            value={this.state.mealServings}
+            onChange={this.handleChange}
+          />
+          <button disabled={this.state.user === null}>Cast your meal!</button>
+        </form>
+        <div>
+          <div>
+            Previous Meals:
+            {previousMeals}
+          </div>
+        </div>
+      </div>
+    );
+  };
+}
+
+// class HostDashboard extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {};
+//   }
+
+class HostMealEvent extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  onClick = () => {
+    this.props.seeDetailsEvent(this.props.meal);
+  };
+
+  render() {
+    return (
+      <div>
+        <span>Name: {this.props.meal.name}</span>
+        <span>
+          {" "}
+          Date:{" "}
+          {moment
+            .utc(parseInt(this.props.meal.pickupTime) * 1000)
+            .local()
+            .format("MMM Do h:mm")}
+        </span>
+        <span>
+          {" "}
+          Confirmed Reservations: {this.props.meal.reservations.length}/
+          {this.props.meal.servings}
+        </span>
+        <button onClick={this.onClick}>See Details</button>
+      </div>
+    );
   }
 }
