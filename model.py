@@ -185,7 +185,7 @@ class Reservation(db.Model):
         return {
             "reservation_id": self.reservation_id,
             "user": self.user.serialize(),
-            "meal": self.meal.serialize(),
+            "meal_id": self.meal.meal_id,
         }
 
     @staticmethod
