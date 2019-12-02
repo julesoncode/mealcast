@@ -193,6 +193,21 @@ class Reservation(db.Model):
             print(e)
             return None
 
+    @staticmethod
+    def get_meal_events_for_host(user):
+        upcoming_meal_events = Meal.query.filter_by(user_id=user.user_id).filter(
+            Meal.pickup_time >= datetime.now(UTC)).all()
+        upcoming_meal_events = [m.serialize() for m in upcoming_meal_events]
+
+        previous_meal_events = Meal.query.filter_by(user_id=user.user_id).filter(
+            Meal.pickup_time < datetime.now(UTC)).all()
+        previous_meal_events = [m.serialize() for m in previous_meal_events]
+
+        return {
+            "upcoming_meal_events": upcoming_meal_events,
+            "previous_meal_events": previous_meal_events,
+        }
+
 
 def connect_to_db(app):
     """Connect the database to Flask app."""
