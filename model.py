@@ -104,7 +104,7 @@ class Meal(db.Model):
 
     def serialize(self):
         serialized_reservations = [r.serialize() for r in self.reservations]
-        return {
+        serialized = {
             'meal_id': self.meal_id,
             "name": self.name,
             "address": self.address,
@@ -112,6 +112,11 @@ class Meal(db.Model):
             "servings": self.servings,
             "reservations": serialized_reservations,
         }
+
+        if self.picture_url is not None:
+            serialized["pictureURL"] = self.picture_url
+            
+        return serialized
 
     @staticmethod
     def create_new_meal(user, name, description, pickup_time, address, lat, lng, servings):
