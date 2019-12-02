@@ -173,7 +173,7 @@ class Reservation(db.Model):
             twilio_client.messages.create(
                 body=f'New Reservation: http://0.0.0.0:5000/meal/meal_id={meal_id}',
                 from_='+14154231357',
-                to=user.phone_number)
+                to=host.phone_number)
 
             return True
         except Exception as e:
