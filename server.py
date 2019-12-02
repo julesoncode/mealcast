@@ -6,11 +6,16 @@ import os
 import googlemaps 
 from jinja2 import StrictUndefined
 from flask import Flask, render_template, request, flash, redirect, session, jsonify, abort, url_for
+from werkzeug.utils import secure_filename
 from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, User, Meal, Reservation
 from twilio.rest import Client
+import uuid
 import datetime
 import utils
+
+UPLOAD_FOLDER = 'static/uploads/'
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg'}
 
 api = googlemaps.Client(key=os.environ["GOOGLE_MAPS_API_KEY"])
 twilio_client = Client(
@@ -19,6 +24,8 @@ twilio_client = Client(
 app = Flask(__name__)
 app.secret_key = "ABC"
 app.jinja_env.undefined = StrictUndefined
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 @app.route("/", methods=["GET"])
 def index_page():
@@ -189,10 +196,20 @@ def host_meal_process():
     lng = float(request.form.get('lng'))
     servings = int(request.form.get('mealServings'))
 
-    
+    image_file = request.files['file']
+    # We use uuid to generate a unique name for the image
+    # We also only accept jpeg data
+    filename_str = str(uuid.uuid4()) + ".jpg"
+    filename = secure_filename(filename_str)
+    filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    image_file.save(filename)
+
     pickup_time = utils.datetime_from_hour_and_minute(pick_up_hour, pick_up_minute)
 
-    new_meal = Meal.create_new_meal(user, name, description, pickup_time, address, lat, lng, servings)
+    # we need to add the slash for HTML img href
+    filename = "/" + filename
+    new_meal = Meal.create_new_meal(user, name, description, pickup_time, address, lat, lng, servings, filename)
     
     return redirect(url_for(".host_meal_details", meal_id=new_meal.meal_id))
 
@@ -220,7 +237,7 @@ def host_meal_api():
 
     return jsonify(meal.serialize())
 
-    
+
 if __name__ == "__main__":
     app.debug = True
     app.jinja_env.auto_reload = app.debug
