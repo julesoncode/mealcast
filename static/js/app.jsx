@@ -675,7 +675,7 @@ class MakeMeal extends React.Component {
           Pickup time
           <HourControl onStartTimeChanged={this.onStartTimeChangedCallback} />
         </span>
-        <form action="/host" method="POST">
+        <form action="/host" method="POST" enctype="multipart/form-data">
           <input type="hidden" name="hour" value={this.state.hour} />
           <input type="hidden" name="minute" value={this.state.minute} />
           <input type="hidden" name="address" value={this.state.address} />
@@ -694,6 +694,11 @@ class MakeMeal extends React.Component {
             placeholder="Description"
             value={this.state.mealDescription}
             onChange={this.handleChange}
+          />
+          <input
+            type="file"
+            name="file"
+            accept="image/jpeg"
           />
           <input
             type="text"
@@ -741,6 +746,7 @@ class HostMealEvent extends React.Component {
           Confirmed Reservations: {this.props.meal.reservations.length}/
           {this.props.meal.servings}
         </span>
+        <img src={this.props.meal.pictureURL} />
         <button onClick={this.onClick}>See Details</button>
       </div>
     );
