@@ -40,6 +40,6 @@ def temp_get_form_validation(first_name, last_name, email, password):
 
 
 def datetime_from_hour_and_minute(hour, minute):
-    pst_time = PST.localize(datetime.datetime.now()).replace(
+    pst_time = PST.normalize(datetime.datetime.now(UTC)).replace(
         hour=hour, minute=minute, second=0, microsecond=0)
     return UTC.normalize(pst_time)
