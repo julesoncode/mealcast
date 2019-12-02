@@ -110,6 +110,25 @@ class Meal(db.Model):
         }
 
     @staticmethod
+    def create_new_meal(user, name, description, pickup_time, address, lat, lng, servings):
+        try:
+            result = Meal(user_id=user.user_id,
+                          name=name,
+                          description=description,
+                          pickup_time=pickup_time,
+                          address=address,
+                          geo=WKTElement("POINT(%0.8f %0.8f)" % (lat, lng)),
+                          servings=servings)
+
+            db.session.add(result)
+            db.session.commit()
+            return result
+
+        except Exception as e:
+            print(e)
+            return None
+
+    @staticmethod
     def nearby(meters, lat, lng, start_time):
         loc = WKTElement("POINT(%0.8f %0.8f)" % (lat, lng))
         meals = Meal.query.filter(func.ST_Distance(loc, Meal.geo) <= meters) \
