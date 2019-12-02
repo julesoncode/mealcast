@@ -47,11 +47,6 @@ class AddressControl extends React.Component {
   }
 }
 
-AddressControl.propTypes = {
-  // callback that notifies us when a new address was picked
-  onAddressChanged: PropTypes.func.isRequired
-};
-
 class DateDisply extends React.Component {
   constructor(props) {
     super(props);
@@ -67,7 +62,6 @@ class HourControl extends React.Component {
     super(props);
   }
 
-  // we need an arrow function here to bind our object to the callback
   onInputCallback = event => {
     // our choice list is in 30 minute intervals, so we figure out the actual
     // hour and minute values here.
@@ -135,11 +129,6 @@ class HourControl extends React.Component {
   }
 }
 
-HourControl.propTypes = {
-  // callback that notifies us when a different hour and minute has been selected
-  onStartTimeChanged: PropTypes.func.isRequired
-};
-
 class MealFilters extends React.Component {
   constructor(props) {
     super(props);
@@ -160,6 +149,7 @@ class MealFilters extends React.Component {
   }
 }
 
+// Component that draws a meal in the meals page
 class Meal extends React.Component {
   constructor(props) {
     super(props);
@@ -194,41 +184,47 @@ class Meal extends React.Component {
   }
 }
 
-MealFilters.propTypes = {
-  // callback that notifies us when a different hour and minute has been selected in the filters
-  onStartTimeChanged: PropTypes.func.isRequired,
-  // callback that notifies us when a new address is picked
-  onAddressChanged: PropTypes.func.isRequired
-};
-
+// Component that draws the meal querying page for a user
 class Meals extends React.Component {
   constructor(props) {
     super(props);
+    // the server will set up these defaults for us so we have
+    // something to draw
+    // TODO handle if these aren't set
     this.location = {
       address: this.props.defaultAddress,
       lat: this.props.defaultLat,
       lng: this.props.defaultLng
     };
-    this.startTime = "now";
+
+    // This special value means the current time to the server
+    this.startTime = { hour: 0, minutes: 0 };
+
+    // Initial query for meals to the server with default address
     this.queryMeals();
+
     this.state = { meals: [] };
   }
 
+  // Called by the time component when the user changes the time filter
   onStartTimeChangedCallback = (hour, minutes) => {
     this.startTime = { hour: hour, minutes: minutes };
 
+    // We only query if we have a valid location and time
     if (this.startTime !== null && this.location !== null) {
       this.queryMeals();
     }
   };
 
-  onAddressChangedCallback = inputAddress => {
+  // Called by the address component when the user changes the address
+  onAddressChangedCallback = place => {
     this.location = {
-      address: inputAddress.formatted_address,
-      lat: inputAddress.geometry.location.lat,
-      lng: inputAddress.geometry.location.lng
+      address: place.formatted_address,
+      lat: place.geometry.location.lat,
+      lng: place.geometry.location.lng
     };
 
+    // We only query if we have a valid location and time
     if (this.startTime !== null && this.location !== null) {
       this.queryMeals();
     }
