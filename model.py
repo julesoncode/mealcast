@@ -185,12 +185,10 @@ class Reservation(db.Model):
         try:
             # A user can only make one reservation per day
             # This query tries to find any reservations made within today's time range
-            maybe_reservation = db.session.query(Reservation).join(Meal) \
+            return db.session.query(Reservation).join(Meal) \
                 .filter(Reservation.guest_user_id == user.user_id) \
                 .filter(Meal.pickup_time >= opening_datetime()) \
-                .filter(Meal.pickup_time <= closing_datetime()).one()
-
-            return maybe_reservation
+                .filter(Meal.pickup_time <= closing_datetime()).first()
         except Exception as e:
             print(e)
             return None
