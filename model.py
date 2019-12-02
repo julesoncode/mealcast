@@ -198,6 +198,15 @@ class Reservation(db.Model):
                 # TODO show a nicer error
                 return False
 
+            if not Meal.has_more_servings(meal_id):
+                # we went over capacity
+                # TODO show a nicer error
+                return False
+
+            # get the host from the meal, we need their phone number for twilio
+            host = db.session.query(User).join(Meal) \
+                .filter(Meal.meal_id == meal_id).one()
+
             reservation = Reservation(
                 meal_id=meal_id, guest_user_id=user.user_id)
             db.session.add(reservation)
