@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy import PrimaryKeyConstraint, func
 from geoalchemy2 import Geography, WKTElement
-
+from geoalchemy2.shape import to_shape
 from datetime import datetime
 import pytz
 
@@ -104,18 +104,22 @@ class Meal(db.Model):
 
     def serialize(self):
         serialized_reservations = [r.serialize() for r in self.reservations]
+        # we use shapely to get the lat/long data from the opaque postgres geo type
+        shape = to_shape(self.geo)
         serialized = {
             'meal_id': self.meal_id,
             "name": self.name,
             "address": self.address,
             "pickupTime": self.pickup_time.timestamp(),
             "servings": self.servings,
+            "lat": shape.y,
+            "lng": shape.x,
             "reservations": serialized_reservations,
         }
 
         if self.picture_url is not None:
             serialized["pictureURL"] = self.picture_url
-            
+
         return serialized
 
     @staticmethod
@@ -126,7 +130,7 @@ class Meal(db.Model):
                           description=description,
                           pickup_time=pickup_time,
                           address=address,
-                          geo=WKTElement("POINT(%0.8f %0.8f)" % (lat, lng)),
+                          geo="POINT(%0.8f %0.8f)" % (lng, lat),
                           servings=servings,
                           picture_url=picture_url)
 
@@ -140,7 +144,7 @@ class Meal(db.Model):
 
     @staticmethod
     def nearby(meters, lat, lng, start_time):
-        loc = WKTElement("POINT(%0.8f %0.8f)" % (lat, lng))
+        loc = WKTElement("POINT(%0.8f %0.8f)" % (lng, lat))
         meals = Meal.query.filter(func.ST_Distance(loc, Meal.geo) <= meters) \
             .filter(Meal.pickup_time >= start_time) \
             .filter(Meal.pickup_time <= closing_datetime()) \
@@ -233,7 +237,7 @@ class Reservation(db.Model):
         try:
             # A user can only make one reservation per day
             # This query tries to find any reservations made within today's time range
-            return db.session.query(Reservation).join(Meal) \
+            return db.session.query(Meal).join(Reservation) \
                 .filter(Reservation.guest_user_id == user.user_id) \
                 .filter(Meal.pickup_time >= opening_datetime()) \
                 .filter(Meal.pickup_time <= closing_datetime()).first()
