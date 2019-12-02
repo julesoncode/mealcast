@@ -1,54 +1,13 @@
 <!DOCTYPE html>
 <html class="fixed-headers copy flexbox flexwrap imageset hipdi" lang="eng">
     <head>
-     {% block head %}
-             <!-- TODO: Make global header and footer  -->
-             <div class="wrapper"> 
-                    <!-- global mealcast header -->
-                    <div class="global-header-wrapper" id="js-global-header">
-                        <header class ="global-header">
-                                <div class="global-header_account-wrapper">
-                                    <div class="global-header_account">
-                                        <div class="account-flyout_wrapper drodown js-flyout-wrapper" id="js-account-flyout-wrapper"></div>
-                                    </div>
-                                </div>
-                                <div class="global-header_logo"></div>
-                                    <a class="global-header_logo_link" href="/" rel="noopener noreferrer" target>
-                                        <nav class="navbar navbar-expand-lg navbar-light justify-content-center">
-                                            <span class="navbar-brand align-self-center">Mealcast</span>
-                                        </nav>
-                                    </a> 
-                                </div>
-                                <!-- TODO: Placeholder item global header -->
-                                <div class="global-header_placeHolderItem">
-                                    <div class="placeHolderItem-flyout_wrapper drowndown js-flyout-wrapper js-fixed-flyout-toggle" data-open="false" id="js-plaaceHolderItem-flyout-wrapper">
-                                        <p class="placeHolderItem-flyout-toggle_placeHolderItem-title">
-                                            <span id="js-placeHolderItem-title">Total # of meals casted</span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <!-- TODO: add 'Sign In' to global header -->
-                                <div class="global-header_signin">
-                                        <div class="signin" id="js-signin-wrapper">
-                                            <p class="signin">
-                                                <span id="js-signin">Sign In</span>
-                                            </p>
-                                        </div>
-                                </div>    
-
-        <!-- TODO add style to head elements -->
-        <style></style>
-
-        <!-- meta tags -->
-        <meta charset="utf-8">
-        <meta name="keywords" content="Food, Meal, Sharing, Social, Takeout, Carryout">
-        <!-- <meta http-equiv="refresh" content="30"> -->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Food Sharing - San Francisco Meals | Mealcast </title>
-        <meta name="csrf-param" content="GET_AUTH_TOKEN_SEE_FLASK_DOCS">
-        <meta name="csrf-token" content="AUTH_TOKEN_JIBBER_JABBER">
-
-     
+        {% block head %}
+            <!-- meta tags -->
+            <meta charset="utf-8">
+            <meta name="keywords" content="Food, Meal, Sharing, Social, Takeout, Carryout">
+            <!-- <meta http-equiv="refresh" content="30"> -->
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Food Sharing - Free San Francisco Meals | Mealcast </title>
             <!-- React Scripts -->
             <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
             <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
@@ -63,10 +22,10 @@
         
             <!-- Bootstrap Link -->
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    
+
             <!-- CSS Link -->
             <link rel="stylesheet" href="static/main.css" />
-            {% endblock %}
+        {% endblock %}
         </head>
         <body>
             {% block content %}
