@@ -1,6 +1,39 @@
 // TODO: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1
 // TODO: https://dev.to/jessicabetts/how-to-use-google-maps-api-and-react-js-26c2
 
+class GoogleMap extends React.Component {
+  constructor(props) {
+    super(props);
+    // since we're interacting with a non-react Google api
+    // we need to use React refs to link up the underlying
+    // DOM node
+    this.myRef = React.createRef();
+  }
+
+  componentDidMount() {
+    const map = new google.maps.Map(this.myRef.current, {
+      zoom: 15,
+      center: this.props.location,
+      zoomControl: true,
+      mapTypeControl: false,
+      scaleControl: false,
+      streetViewControl: false,
+      rotateControl: false,
+      fullscreenControl: false,
+    });
+    var marker = new google.maps.Marker({
+      position: this.props.location,
+      map: map
+    });
+  }
+
+  render() {
+    return (
+      <div ref={this.myRef} style={{ height: 400 + "px", width: 400 + "px" }} />
+    );
+  }
+}
+
 class AddressControl extends React.Component {
   constructor(props) {
     super(props);
@@ -560,28 +593,38 @@ class Reservations extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      reservation: null
+      meal: null
     };
 
     this.queryReservations();
   }
 
   queryReservations() {
-    $.getJSON("/api/reservations").done(reservation => {
-      this.setState({ reservation: reservation });
+    $.getJSON("/api/reservations").done(meal => {
+      this.setState({ meal: meal });
     });
   }
 
   render() {
-    var reservation_details = <div>TODO</div>;
+    var components = null;
+    if (this.state.meal !== null) {
+      const position = { lat: this.state.meal.lat, lng: this.state.meal.lng };
+      components = (
+        <div>
+          <div>TODO show rest of details</div>
+          <GoogleMap location={position} />
+        </div>
+      );
+    }
     // TODO print details
     // if (this.state.reservation !== null) {
     //
     //   reservation_details = <div>{this.state.reservation.meal.name}</div>;
     // }
+
     return (
       <div>
-        {reservation_details}
+        {components}
         <a href="/">Go Home</a>
       </div>
     );
@@ -695,11 +738,7 @@ class MakeMeal extends React.Component {
             value={this.state.mealDescription}
             onChange={this.handleChange}
           />
-          <input
-            type="file"
-            name="file"
-            accept="image/jpeg"
-          />
+          <input type="file" name="file" accept="image/jpeg" />
           <input
             type="text"
             name="mealServings"
