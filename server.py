@@ -193,11 +193,44 @@ def reservation_api():
 
     return jsonify(reservation.serialize())
 
-###############################################################################################
-#                                     ____________ PAGE                                       #
-###############################################################################################
+@app.route("/api/meal_events", methods=["GET"])
+def meal_events_api():
+    user = utils.get_logged_in_user()
+
+    # TODO handle no logged in user
+    meal_events = Reservation.get_meal_events_for_host(user)
+
+    if meal_events is None:
+        abort(404)
+
+    return jsonify(meal_events)
 
 
+@app.route("/host", methods=["GET"])
+def host(): 
+    return render_template("host.html", api_key=os.environ['GOOGLE_MAPS_API_KEY'])
+
+
+@app.route("/host", methods=["POST"])
+def host_meal_process():
+    user = utils.get_logged_in_user()
+    name = request.form.get('mealName')
+    description = request.form.get('mealDescription')
+    pick_up_hour = int(request.form.get('hour'))
+    pick_up_minute = int(request.form.get('minute'))
+    address = request.form.get('address')
+    lat = float(request.form.get('lat'))
+    lng = float(request.form.get('lng'))
+    servings = int(request.form.get('mealServings'))
+
+    
+    pickup_time = utils.datetime_from_hour_and_minute(pick_up_hour, pick_up_minute)
+
+    new_meal = Meal.create_new_meal(user, name, description, pickup_time, address, lat, lng, servings)
+
+    return render_template('host_dashboard.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'])
+
+    
 if __name__ == "__main__":
     app.debug = True
     app.jinja_env.auto_reload = app.debug
