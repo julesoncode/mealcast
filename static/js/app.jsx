@@ -1,6 +1,7 @@
 // TODO: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1
 // TODO: https://dev.to/jessicabetts/how-to-use-google-maps-api-and-react-js-26c2
 
+// Displays a google map view for a location passed in as a `location` prop
 class GoogleMap extends React.Component {
   constructor(props) {
     super(props);
@@ -19,7 +20,7 @@ class GoogleMap extends React.Component {
       scaleControl: false,
       streetViewControl: false,
       rotateControl: false,
-      fullscreenControl: false,
+      fullscreenControl: false
     });
     var marker = new google.maps.Marker({
       position: this.props.location,
@@ -80,6 +81,7 @@ class AddressControl extends React.Component {
   }
 }
 
+// TODO style this better
 class DateDisply extends React.Component {
   constructor(props) {
     super(props);
@@ -90,6 +92,9 @@ class DateDisply extends React.Component {
   }
 }
 
+// Create a drop down box of times in 30 minute intervals
+// has `onStartTimeChanged` event which is a function that
+// has a hour and minute argument
 class HourControl extends React.Component {
   constructor(props) {
     super(props);
@@ -162,6 +167,10 @@ class HourControl extends React.Component {
   }
 }
 
+// This component is used to display the various filters someone can use when searching for meals
+// Has a `onStartTimeChanged` property which is an event delegated to the HourControl's onStartTimeChanged
+// and `onAddressChanged` property which is an event delegated to AddressControl's onAddressChanged
+// It also has a `defaultAddress` which is forwarded to AddressControl to display a default value
 class MealFilters extends React.Component {
   constructor(props) {
     super(props);
@@ -183,6 +192,7 @@ class MealFilters extends React.Component {
 }
 
 // Component that draws a meal in the meals page
+// It has a button that goes to the reserve page
 class Meal extends React.Component {
   constructor(props) {
     super(props);
@@ -204,7 +214,7 @@ class Meal extends React.Component {
           Name: {this.props.name}
         </span>
         <div>
-          Pick-up&nbsp;
+          Pick-up
           {moment
             .utc(parseInt(this.props.startTime * 1000))
             .local()
@@ -217,7 +227,9 @@ class Meal extends React.Component {
   }
 }
 
-// Component that draws the meal querying page for a user
+// Component that draws the meal querying page for a user.
+// `location` and `startTime` are used to control the ajax queries.
+// The MealFilters component is used for filtering
 class Meals extends React.Component {
   constructor(props) {
     super(props);
@@ -303,6 +315,9 @@ class Meals extends React.Component {
   }
 }
 
+// Component that draws the landing page
+// It has an address control and 2 buttons to go to the main 
+// 2 flows of the application.
 class LandingPage extends React.Component {
   constructor(props) {
     super(props);
@@ -344,6 +359,11 @@ class LandingPage extends React.Component {
   }
 }
 
+// This component shows inputs for registering a user and does
+// an ajax request to register the user.
+// It has 2 events, `onUserRegistered` is called when a successful
+// registration happens, or `onLoginRequested` is called if the
+// user presses the "login instead" button to switch forms.
 class RegisterUser extends React.Component {
   constructor(props) {
     super(props);
@@ -417,6 +437,10 @@ class RegisterUser extends React.Component {
   }
 }
 
+// This component handles logging a user in via a form and an ajax request
+// It has 2 events, `onUserLoggedIn` is called when a user successfully logs in.
+// `onRegisterRequested` is the user presses the register button to switch to
+// the registration form.
 class LoginUser extends React.Component {
   constructor(props) {
     super(props);
@@ -466,6 +490,15 @@ class LoginUser extends React.Component {
   }
 }
 
+// This component uses the Login and Register components to create
+// a component to handle login, registration, and logout.
+// It does so by toggling between 4 states:
+// loading - We send an ajax request to the server to try to get the logged in user from the session
+// unauthenticated-register - Shows the register component
+// unauthenticated-login - Shows the login component
+// logged-in - Shows user info and a logout button
+// It has an event property `onUserResolved` which gets
+// called when a user is resolved from either the session via ajax, the login component, or registration
 class UserInfo extends React.Component {
   constructor(props) {
     super(props);
@@ -535,6 +568,10 @@ class UserInfo extends React.Component {
   }
 }
 
+// This component handles showing confirmation and final reservation of a meal.
+// It reads the meal_id from the current URL and uses ajax to get the details
+// It uses the UserInfo component to get a user
+// Once it has all the information the form can be used to submit the reservation
 class Reserve extends React.Component {
   constructor(props) {
     super(props);
@@ -589,6 +626,9 @@ class Reserve extends React.Component {
   }
 }
 
+// This component is used to display the active reservation of the currently logged in
+// user, which will have details for contacting the host and the address
+// It also shows the location on a google map
 class Reservations extends React.Component {
   constructor(props) {
     super(props);
@@ -631,6 +671,11 @@ class Reservations extends React.Component {
   }
 }
 
+// This component is used by the host meal creation flow
+// It collects all the data required using previously created
+// components along with some extras.
+// It also uses ajax to query upcoming meal events the host has created
+// and previous meal events for reference.
 class MakeMeal extends React.Component {
   constructor(props) {
     super(props);
@@ -759,6 +804,9 @@ class MakeMeal extends React.Component {
   };
 }
 
+// This component draws a host's meal events
+// It has some extra information that the regular meal component
+// shouldn't show like the servings.
 class HostMealEvent extends React.Component {
   constructor(props) {
     super(props);
@@ -792,6 +840,10 @@ class HostMealEvent extends React.Component {
   }
 }
 
+// This component draws the details of a host's meal
+// This includes all information for the meal including
+// Who is coming so they can verify and cross reference guests
+// when they come to grab their meal.
 class HostMealDetails extends React.Component {
   constructor(props) {
     super(props);
