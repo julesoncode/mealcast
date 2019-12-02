@@ -715,12 +715,6 @@ class MakeMeal extends React.Component {
   };
 }
 
-// class HostDashboard extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {};
-//   }
-
 class HostMealEvent extends React.Component {
   constructor(props) {
     super(props);
@@ -748,6 +742,48 @@ class HostMealEvent extends React.Component {
           {this.props.meal.servings}
         </span>
         <button onClick={this.onClick}>See Details</button>
+      </div>
+    );
+  }
+}
+
+class HostMealDetails extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      meal: null
+    };
+    this.queryHostMeal();
+  }
+
+  queryHostMeal = () => {
+    let searchParams = new URLSearchParams(window.location.search);
+    const mealID = searchParams.get("meal_id");
+    $.getJSON("/api/host/meal/", { meal_id: mealID }, meal => {
+      this.setState({ meal: meal });
+    });
+  };
+
+  render() {
+    var mealDiv = null;
+    const guests = [];
+    if (this.state.meal !== null) {
+      mealDiv = <div>{this.state.meal.name}</div>;
+
+      this.state.meal.reservations.forEach(reservation => {
+        guests.push(
+          <div>
+            <span>{reservation.user.firstName}</span>
+            <span>{reservation.user.lastName}</span>
+            <span>Phone Number:{reservation.user.phoneNumber}</span>
+          </div>
+        );
+      });
+    }
+    return (
+      <div>
+        {mealDiv}
+        {guests}
       </div>
     );
   }
