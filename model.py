@@ -77,10 +77,12 @@ class Meal(db.Model):
     __tablename__ = "meals"
 
     meal_id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('users.user_id'), nullable=False)
+    user_id = db.Column(db.Integer(), db.ForeignKey(
+        'users.user_id'), nullable=False)
     name = db.Column(db.String(), nullable=False)
     description = db.Column(db.String(), nullable=False)
     pickup_time = db.Column(db.DateTime(), nullable=False)
+    # TODO change var name to pickup_address
     address = db.Column(db.String(), nullable=False)
     geo = db.Column(Geography(geometry_type='POINT'))
     servings = db.Column(db.Integer(), nullable=False)
