@@ -92,11 +92,9 @@ class Meal(db.Model):
 
         return f"""<meal_id={self.meal_id}, 
                     user_id={self.user_id}
-                    meal_type={self.meal_type} 
                     name={self.name} 
                     description={self.description} 
-                    start_time={self.start_time}
-                    end_time={self.end_time} 
+                    pickup_time={self.start_time}
                     address={self.address} 
                     geo={self.geo}
                     servings={self.servings}>"""
