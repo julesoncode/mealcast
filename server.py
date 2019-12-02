@@ -3,8 +3,7 @@
 # TODO func set_api_key
 
 import os
-import googlemaps
-
+import googlemaps 
 from jinja2 import StrictUndefined
 from flask import Flask, render_template, request, flash, redirect, session, jsonify, abort
 from flask_debugtoolbar import DebugToolbarExtension
@@ -21,35 +20,9 @@ app = Flask(__name__)
 app.secret_key = "ABC"
 app.jinja_env.undefined = StrictUndefined
 
-
-###############################################################################################
-#                                       LANDING PAGE                                          #
-###############################################################################################
-
-
 @app.route("/", methods=["GET"])
 def index_page():
     return render_template("index.html", api_key=os.environ['GOOGLE_MAPS_API_KEY'], user=None)
-
-
-###############################################################################################
-#                                        MEALS PAGE                                           #
-#                   ____                                    ?~~bL                             #
-#                   z@~ b                                    |  `U,                           #
-#                    ]@[  |                                   ]'  z@'                         #
-#                    d@~' `|, .__     _----L___----, __, .  _t'   `@j                         #
-#                    `@L_,   "-~ `--"~-a,           `C.  ~""O_    ._`@                        #
-#                    q@~'   ]P       ]@[            `Y=,   `H+z_  `a@                         #
-#                    `@L  _z@        d@               Ya     `-@b,_a'                         #
-#                    `-@d@a'       )@[               `VL      `a@@'                           #
-#                        aa~'   ],  .a@'                qqL  ), ./~                           #
-#                        @@_  _z~  _d@[                 .V@  .L_d'                            #
-#                        "~@@@'  ]@@@'        __      )@n@bza@-"                              #
-#                        `-@zzz@@@L        )@@z     ]@@=%-"                                   #
-#                            "~~@@@@@bz_    _a@@@@z___a@K                                     #
-#                                "~-@@@@@@@@@@@@@@@@@@~"                                      #
-#                                    `~~~-@~~-@@~~~~~'                                        #
-###############################################################################################
 
 
 @app.route("/meals", methods=["GET"])
@@ -64,7 +37,7 @@ def meals():
 
 @app.route("/reserve", methods=["POST"])
 def submit_reservation():
-    meal_id = request.form.get('meal_id')
+    meal_id = int(request.form.get('meal_id'))
     # TODO handle null meal_id
 
     user = utils.get_logged_in_user()
@@ -76,8 +49,7 @@ def submit_reservation():
     if success:
         return redirect("/reservations")
     else:
-        # TODO redirect with error
-        raise NotImplementedError()
+        return redirect("/")
 
 
 @app.route("/reservations", methods=["GET"])
@@ -89,10 +61,6 @@ def reservations():
 def reserve():
     meal_id = request.args.get('meal_id')
     return render_template('reserve.html', api_key=os.environ['GOOGLE_MAPS_API_KEY'])
-
-###############################################################################################
-#                                    API MEALS PROCESS                                       #
-###############################################################################################
 
 
 @app.route("/api/meals", methods=["GET"])
@@ -116,10 +84,6 @@ def api_meals():
 
     return jsonify([meal.serialize() for meal in meals])
 
-
-###############################################################################################
-#                                     RESERVE PAGE                                            #
-###############################################################################################
 
 @app.route("/api/register_user", methods=["POST"])
 def register_user_api():
