@@ -481,13 +481,18 @@ class LoginUser extends React.Component {
     super(props);
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      errorMessage: null
     };
   }
 
   requestLogin = () => {
-    $.post("api/login", this.state, user => {
-      this.props.onUserLoggedIn(user);
+    $.post("api/login", this.state, user_response => {
+      if (user_response.error) {
+        this.setState({ errorMessage: user_response.error });
+      } else {
+        this.props.onUserLoggedIn(user_response.user);
+      }
     });
   };
 
@@ -496,12 +501,16 @@ class LoginUser extends React.Component {
   };
 
   render() {
+    const shouldDisableLoginButton =
+      this.state.email === "" || this.state.password === "";
     return (
       <div>
         <div>
           <button onClick={() => this.props.onRegisterRequested()}>
             Register Instead
           </button>
+          {/* TODO style error better  */}
+          {this.state.errorMessage}
         </div>
         <div>
           <input
@@ -518,7 +527,12 @@ class LoginUser extends React.Component {
             value={this.state.password}
             onChange={this.handleChange}
           />
-          <button onClick={this.requestLogin}>Log In</button>
+          <button
+            disabled={shouldDisableLoginButton}
+            onClick={this.requestLogin}
+          >
+            Log In
+          </button>
         </div>
       </div>
     );
