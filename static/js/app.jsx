@@ -742,8 +742,6 @@ class MakeMeal extends React.Component {
       mealServings: "",
       user: null
     };
-
-    this.queryMealEvents();
   }
 
   queryMealEvents = () => {
@@ -789,6 +787,13 @@ class MakeMeal extends React.Component {
   };
 
   render = () => {
+    const disableMakeMealButton =
+      this.state.mealName === "" ||
+      this.state.mealDescription === "" ||
+      this.state.address === "" ||
+      this.state.mealServings === "" ||
+      this.state.user === null;
+
     const upcomingMeals = [];
     const previousMeals = [];
 
@@ -803,7 +808,13 @@ class MakeMeal extends React.Component {
     });
 
     this.state.previousMeals.forEach(meal => {
-      previousMeals.push(<HostMealEvent key={meal.meal_id} meal={meal} />);
+      previousMeals.push(
+        <HostMealEvent
+          key={meal.meal_id}
+          meal={meal}
+          seeDetailsEvent={this.onSeeDetails}
+        />
+      );
     });
 
     return (
@@ -818,7 +829,7 @@ class MakeMeal extends React.Component {
           Pickup time
           <HourControl onStartTimeChanged={this.onStartTimeChangedCallback} />
         </span>
-        <form action="/host" method="POST" enctype="multipart/form-data">
+        <form action="/host" method="POST" encType="multipart/form-data">
           <input type="hidden" name="hour" value={this.state.hour} />
           <input type="hidden" name="minute" value={this.state.minute} />
           <input type="hidden" name="address" value={this.state.address} />
@@ -846,7 +857,7 @@ class MakeMeal extends React.Component {
             value={this.state.mealServings}
             onChange={this.handleChange}
           />
-          <button disabled={this.state.user === null}>Cast your meal!</button>
+          <button disabled={disableMakeMealButton}>Cast your meal!</button>
         </form>
         <div>
           <div>
