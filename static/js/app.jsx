@@ -322,24 +322,26 @@ class Meals extends React.Component {
 }
 
 // Component that draws the landing page
-// It has an address control and 2 buttons to go to the main 
+// It has an address control and 2 buttons to go to the main
 // 2 flows of the application.
 class LandingPage extends React.Component {
   constructor(props) {
     super(props);
-    this.place = null;
+    this.state = {
+      place: null
+    };
   }
   onAddressChangedCallback = place => {
-    this.place = place;
+    this.setState({ place: place });
   };
 
   goToMeals = () => {
     window.location =
       "/meals?" +
       $.param({
-        address: this.place.formatted_address,
-        lat: this.place.geometry.location.lat,
-        lng: this.place.geometry.location.lng
+        address: this.state.place.formatted_address,
+        lat: this.state.place.geometry.location.lat,
+        lng: this.state.place.geometry.location.lng
       });
   };
 
@@ -349,16 +351,25 @@ class LandingPage extends React.Component {
 
   render() {
     return (
+      // TODO Landing page login btn
+
       <div>
+        <div>
+          <button>Login</button>
+        </div>
         <div>
           <AddressControl onAddressChanged={this.onAddressChangedCallback} />
         </div>
         <div>
-          <button onClick={this.goToMeals}>Find a Meal</button>
+          <button disabled={this.state.place === null} onClick={this.goToMeals}>
+            Find a Meal
+          </button>
         </div>
         <div>Or</div>
         <div>
-          <button onClick={this.goToHost}>Make a Meal</button>
+          <button disabled={this.state.place === null} onClick={this.goToHost}>
+            Make a Meal
+          </button>
         </div>
       </div>
     );
