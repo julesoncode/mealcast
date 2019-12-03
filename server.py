@@ -103,12 +103,12 @@ def register_user_api():
     new_user = User.create_new_user(
         first_name, last_name, email, phone_number, password)
 
-    if new_user is None:
-        abort(404)
+    if isinstance(new_user, str):
+        return jsonify({"error": new_user})
 
     utils.set_logged_in_user(new_user)
 
-    return jsonify(new_user.serialize())
+    return jsonify({"user": new_user.serialize()})
 
 
 @app.route("/api/user", methods=["GET"])
@@ -135,11 +135,11 @@ def login_api():
     user = User.try_login(email, password)
 
     if user is None:
-        abort(404)
+        return jsonify({"error": "Invalid email credentials"})
 
     utils.set_logged_in_user(user)
 
-    return jsonify(user.serialize())
+    return jsonify({"user": user.serialize()})
 
 
 @app.route("/api/meal", methods=["GET"])
