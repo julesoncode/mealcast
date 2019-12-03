@@ -88,7 +88,13 @@ class DateDisply extends React.Component {
   }
 
   render() {
-    return <span>Date {Date.now()}</span>;
+    return (
+      <pre>
+        <span>WHEN: Today</span>
+      </pre>
+    );
+    // TODO expand on broader date filtering
+    // return <span>Date {Date.now()}</span>;
   }
 }
 
