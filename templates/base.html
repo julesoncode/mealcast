@@ -28,8 +28,14 @@
         {% endblock %}
         </head>
         <body> 
-            <div class="container">
-                    <nav class="d-inline-flex justify-content-center col-12"><span class="navbar-text logo">Mealcast</span></nav>
+            <!-- <div class="container">
+                    <nav class="d-inline-flex justify-content-center col-12"><span class="navbar-text logo">Mealcast</span></nav> -->
+                    <nav class="navbar navbar-expand-md justify-content-center col-12">
+                        <a class="navbar-text logo" href="http://0.0.0.0:5000/">Mealcast</a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navExpandContent1">
+                            <span class="navbar-toggler-icon"></span>
+                              </button>
+                    </nav>
                     {% block content %}
                     {% endblock %}
             </div>
