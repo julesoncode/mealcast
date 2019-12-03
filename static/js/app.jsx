@@ -899,7 +899,10 @@ class HostMealEvent extends React.Component {
           Confirmed Reservations: {this.props.meal.reservations.length}/
           {this.props.meal.servings}
         </span>
-        <img src={this.props.meal.pictureURL} />
+        <img
+          src={this.props.meal.pictureURL}
+          style={{ width: 256 + "px", height: "auto", "max-width": 100 + "%" }}
+        />
         <button onClick={this.onClick}>See Details</button>
       </div>
     );
