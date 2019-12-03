@@ -739,7 +739,8 @@ class MakeMeal extends React.Component {
       minute: 0,
       lat: "",
       lng: "",
-      mealServings: ""
+      mealServings: "",
+      user: null
     };
 
     this.queryMealEvents();
@@ -768,7 +769,12 @@ class MakeMeal extends React.Component {
     this.setState({ hour: hour, minute: minute });
   };
 
-  setUser() {}
+  setUser = user => {
+    this.setState({ user: user, previousMeals: [], upcomingMeals: [] });
+    if (user !== null) {
+      this.queryMealEvents();
+    }
+  };
 
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value });
