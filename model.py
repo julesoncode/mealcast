@@ -40,6 +40,11 @@ class User(db.Model):
     @staticmethod
     def create_new_user(first_name, last_name, email, phone_number, password):
         try:
+            maybe_user_with_phone_number = User.query.filter_by(phone_number=phone_number).first()
+
+            if maybe_user_with_phone_number is not None:
+                return "Phone number already in use"
+            
             result = User(first_name=first_name,
                           last_name=last_name,
                           email=email,
@@ -51,16 +56,18 @@ class User(db.Model):
 
             return result
         except Exception as e:
-            print(e)
-            return None
+            exception_str = str(e)
+            if "users_email_key" in exception_str:
+                return "Email already in use"
+            else:
+                return "Something bad has happened"
 
     @staticmethod
     def try_login(email, password):
         try:
             return User.query.filter_by(email=email, password=password).one()
-        except Exception as e:
-            print(e)
-            return None
+        except Exception:
+                return None
 
     def serialize(self):
         return {
