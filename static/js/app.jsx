@@ -346,7 +346,13 @@ class LandingPage extends React.Component {
   };
 
   goToHost = () => {
-    window.location = "/host";
+    window.location =
+      "/host?" +
+      $.param({
+        address: this.state.place.formatted_address,
+        lat: this.state.place.geometry.location.lat,
+        lng: this.state.place.geometry.location.lng
+      });
   };
 
   render() {
@@ -728,17 +734,21 @@ class Reservations extends React.Component {
 class MakeMeal extends React.Component {
   constructor(props) {
     super(props);
+    const searchParams = new URLSearchParams(window.location.search);
+    this.defaultAddress = searchParams.get("address")
+    const defaultLat = searchParams.get("lat")
+    const defaultLng = searchParams.get("lng")
     this.state = {
       previousMeals: [],
       upcomingMeals: [],
       meal: null,
       mealName: "",
       mealDescription: "",
-      address: "",
+      address: this.defaultAddress,
       hour: 0,
       minute: 0,
-      lat: "",
-      lng: "",
+      lat: defaultLat,
+      lng: defaultLng,
       mealServings: "",
       user: null
     };
@@ -824,7 +834,7 @@ class MakeMeal extends React.Component {
           Current Meals:
           {upcomingMeals}
         </div>
-        <AddressControl onAddressChanged={this.onAddressChangedCallback} />
+        <AddressControl defaultAddress={this.defaultAddress} onAddressChanged={this.onAddressChangedCallback} />
         <span>
           Pickup time
           <HourControl onStartTimeChanged={this.onStartTimeChangedCallback} />
