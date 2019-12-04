@@ -357,23 +357,23 @@ class LandingPage extends React.Component {
 
   render() {
     return (
-      // TODO Landing page login btn
-
-      <div>
-        <div>
-          <button>Login</button>
-        </div>
-        <div>
+      <div class="landing-page-background row align-items-center justify-content-center mx-0">
+        <div class="d-flex flex-column justify-content-center">
+          <p>
+            Share a meal.
+          </p>
+          <p>
+            Near you.
+          </p>
+          <p>
+            For free.
+          </p>
           <AddressControl onAddressChanged={this.onAddressChangedCallback} />
-        </div>
-        <div>
-          <button disabled={this.state.place === null} onClick={this.goToMeals}>
+          <button type="button" class="btn btn-primary btn-rounded" disabled={this.state.place === null} onClick={this.goToMeals}>
             Find a Meal
           </button>
-        </div>
-        <div>Or</div>
-        <div>
-          <button disabled={this.state.place === null} onClick={this.goToHost}>
+
+          <button type="button" class="btn btn-primary btn-rounded" disabled={this.state.place === null} onClick={this.goToHost}>
             Make a Meal
           </button>
         </div>
@@ -735,9 +735,9 @@ class MakeMeal extends React.Component {
   constructor(props) {
     super(props);
     const searchParams = new URLSearchParams(window.location.search);
-    this.defaultAddress = searchParams.get("address")
-    const defaultLat = searchParams.get("lat")
-    const defaultLng = searchParams.get("lng")
+    this.defaultAddress = searchParams.get("address");
+    const defaultLat = searchParams.get("lat");
+    const defaultLng = searchParams.get("lng");
     this.state = {
       previousMeals: [],
       upcomingMeals: [],
@@ -834,7 +834,10 @@ class MakeMeal extends React.Component {
           Current Meals:
           {upcomingMeals}
         </div>
-        <AddressControl defaultAddress={this.defaultAddress} onAddressChanged={this.onAddressChangedCallback} />
+        <AddressControl
+          defaultAddress={this.defaultAddress}
+          onAddressChanged={this.onAddressChangedCallback}
+        />
         <span>
           Pickup time
           <HourControl onStartTimeChanged={this.onStartTimeChangedCallback} />
