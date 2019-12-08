@@ -86,6 +86,20 @@ body {
     color: white;
 }
 
+.mc-background-form {
+    background-color: #e8e8e8
+}
+
 .mc-root-container {
     width: 80%;
+}
+
+.mc-card-size {
+    width: 30%;
+}
+
+.mc-card-image-size {
+    width: 18rem;
+    height: 11.3924050633rem;
+    object-fit: cover;
 }

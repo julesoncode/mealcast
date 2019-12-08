@@ -121,7 +121,9 @@ class Meal(db.Model):
             "servings": self.servings,
             "lat": shape.y,
             "lng": shape.x,
+            "picture_url": self.picture_url,
             "reservations": serialized_reservations,
+            "distance": 5000,
         }
 
         if self.picture_url is not None:

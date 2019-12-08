@@ -179,10 +179,10 @@ class HourControl extends React.Component {
 
     // register onInput with our callback
     return (
-      <div className={"form-group" + this.props.className}>
+      <div className={"form-group " + this.props.className}>
         <div className="input-group w-100">
           <div className="input-group-prepend">
-            <label class="input-group-text">Hour</label>
+            <label className="input-group-text">Hour</label>
           </div>
           <select className="custom-select" onInput={this.onInputCallback}>
             {options}
@@ -208,7 +208,7 @@ class MealFilters extends React.Component {
       <div className="form-inline">
         <div className="input-group col-7 p-0 pr-3">
           <div className="input-group-prepend">
-            <span className="input-group-text">WHERE:</span>
+            <span className="input-group-text">Where</span>
           </div>
           <AddressControl
             className="form-control"
@@ -243,20 +243,28 @@ class Meal extends React.Component {
 
   render() {
     return (
-      <div>
-        <span>
-          ID: {this.props.meal_id}
-          Name: {this.props.name}
-        </span>
-        <div>
-          Pick-up
-          {moment
-            .utc(parseInt(this.props.startTime * 1000))
-            .local()
-            .fromNow()}
+      <div className="card mc-card-size mb-5">
+        <img
+          className="card-img-top mc-card-image-size"
+          src={this.props.meal.picture_url}
+        />
+        <div className="card-body">
+          <h6 className="card-title">{this.props.meal.name}</h6>
+          <div>
+            Pick-up&nbsp;
+            {moment
+              .utc(parseInt(this.props.meal.pickupTime * 1000))
+              .local()
+              .fromNow()}
+          </div>
+          <div>Distance: {this.props.meal.distance * 0.000621371} miles</div>
+          <button
+            className="btn mc-primary-bg-color text-white w-100 mt-2"
+            onClick={this.goToReservation}
+          >
+            Reserve
+          </button>
         </div>
-        <span>Distance: TODO</span>
-        <button onClick={this.goToReservation}>Reserve</button>
       </div>
     );
   }
@@ -328,12 +336,7 @@ class Meals extends React.Component {
 
     this.state.meals.forEach(meal => {
       meal_components.push(
-        <Meal
-          key={meal.meal_id}
-          meal_id={meal.meal_id}
-          name={meal.name}
-          startTime={meal.pickupTime}
-        />
+        <Meal key={meal.meal_id} meal_id={meal.meal_id} meal={meal} />
       );
     });
 
@@ -344,8 +347,8 @@ class Meals extends React.Component {
           onStartTimeChanged={this.onStartTimeChangedCallback}
           onAddressChanged={this.onAddressChangedCallback}
         />
-        <div className="d-flex mt-5 flex-nowrap">
-        {meal_components}
+        <div className="d-flex mt-5 flex-wrap justify-content-between">
+          {meal_components}
         </div>
       </div>
     );
@@ -388,7 +391,7 @@ class LandingPage extends React.Component {
 
   render() {
     return (
-      <div class="landing-page-background row align-items-center justify-content-center mx-0">
+      <div className="landing-page-background row align-items-center justify-content-center mx-0">
         <div className="d-flex flex-column justify-content-center input-group landing-page-controls">
           <p>Share a meal.</p>
           <p>Near you.</p>
@@ -434,6 +437,7 @@ class RegisterUser extends React.Component {
       phoneNumber: "",
       password: "",
       email: "",
+      address: "",
       errorMessage: null
     };
   }
@@ -460,56 +464,95 @@ class RegisterUser extends React.Component {
       this.state.password === "" ||
       this.state.email === "";
     return (
-      <div>
-        <div>
-          <button onClick={() => this.props.onLoginRequested()}>
-            Login Instead
-          </button>
-          {/* TODO style the error better */}
-          {this.state.errorMessage}
+      <div className="container border p-0">
+        <div className="container border-bottom">
+          <div className="row">
+            <h5 className="col-8 m-0 h-100 my-auto">Register</h5>
+            <div className="col-2 p-0">
+              <button
+                className="btn mc-primary-bg-color text-white form-control w-100"
+                onClick={() => this.props.onLoginRequested()}
+              >
+                Login Instead
+              </button>
+            </div>
+            <div className="col-2 p-0">
+              <button
+                className="btn mc-primary-bg-color text-white form-control w-100"
+                disabled={shouldDisableRegisterButton}
+                onClick={this.registerUser}
+              >
+                Register User
+              </button>
+            </div>
+          </div>
         </div>
-        <div>
-          <input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={this.state.firstName}
-            onChange={this.handleChange}
-          />
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={this.state.lastName}
-            onChange={this.handleChange}
-          />
-          <input
-            type="text"
-            name="email"
-            placeholder="Email"
-            value={this.state.email}
-            onChange={this.handleChange}
-          />
-          <input
-            type="text"
-            name="phoneNumber"
-            placeholder="Phone Number"
-            value={this.state.phoneNumber}
-            onChange={this.handleChange}
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={this.state.password}
-            onChange={this.handleChange}
-          />
-          <button
-            disabled={shouldDisableRegisterButton}
-            onClick={this.registerUser}
-          >
-            Register User
-          </button>
+
+        <div className="mc-background-form container">
+          <div className="row">
+            <div className="col-4 p-2">
+              <input
+                className="form-control w-100"
+                type="text"
+                name="firstName"
+                placeholder="First Name"
+                value={this.state.firstName}
+                onChange={this.handleChange}
+              />
+            </div>
+            <div className="col-4 p-2">
+              <input
+                className="form-control w-100"
+                type="text"
+                name="lastName"
+                placeholder="Last Name"
+                value={this.state.lastName}
+                onChange={this.handleChange}
+              />
+            </div>
+            <div className="col-4 p-2">
+              <input
+                className="form-control w-100"
+                type="text"
+                name="address"
+                placeholder="Address"
+                value={this.state.address}
+                onChange={this.handleChange}
+              />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-4 p-2">
+              <input
+                className="form-control w-100"
+                type="text"
+                name="email"
+                placeholder="Email"
+                value={this.state.email}
+                onChange={this.handleChange}
+              />
+            </div>
+            <div className="col-4 p-2">
+              <input
+                className="form-control w-100"
+                type="text"
+                name="phoneNumber"
+                placeholder="Phone Number"
+                value={this.state.phoneNumber}
+                onChange={this.handleChange}
+              />
+            </div>
+            <div className="col-4 p-2">
+              <input
+                className="form-control w-100"
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={this.state.password}
+                onChange={this.handleChange}
+              />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -701,7 +744,7 @@ class Reserve extends React.Component {
       );
     }
     return (
-      <div>
+      <div className="container">
         <UserInfo onUserResolved={this.setUser} />
         <div>
           {meal_component}
