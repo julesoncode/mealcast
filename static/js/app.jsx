@@ -77,7 +77,13 @@ class AddressControl extends React.Component {
     if (this.props.defaultAddress !== null) {
       placeholder = this.props.defaultAddress;
     }
-    return <input ref={this.myRef} placeholder={placeholder} />;
+    return (
+      <input
+        className={this.props.className}
+        ref={this.myRef}
+        placeholder={placeholder}
+      />
+    );
   }
 }
 
@@ -89,9 +95,12 @@ class DateDisply extends React.Component {
 
   render() {
     return (
-      <pre>
-        <span>WHEN: Today</span>
-      </pre>
+      <div className={"input-group " + this.props.className}>
+        <div className="input-group-prepend">
+          <span className="input-group-text">When</span>
+        </div>
+        <span className="form-control">Today</span>
+      </div>
     );
     // TODO expand on broader date filtering
     // return <span>Date {Date.now()}</span>;
@@ -169,7 +178,18 @@ class HourControl extends React.Component {
     }
 
     // register onInput with our callback
-    return <select onInput={this.onInputCallback}>{options}</select>;
+    return (
+      <div className={"form-group" + this.props.className}>
+        <div className="input-group w-100">
+          <div className="input-group-prepend">
+            <label class="input-group-text">Hour</label>
+          </div>
+          <select className="custom-select" onInput={this.onInputCallback}>
+            {options}
+          </select>
+        </div>
+      </div>
+    );
   }
 }
 
@@ -185,13 +205,22 @@ class MealFilters extends React.Component {
 
   render() {
     return (
-      <div>
-        <AddressControl
-          defaultAddress={this.props.defaultAddress}
-          onAddressChanged={this.props.onAddressChanged}
+      <div className="form-inline">
+        <div className="input-group col-7 p-0 pr-3">
+          <div className="input-group-prepend">
+            <span className="input-group-text">WHERE:</span>
+          </div>
+          <AddressControl
+            className="form-control"
+            defaultAddress={this.props.defaultAddress}
+            onAddressChanged={this.props.onAddressChanged}
+          />
+        </div>
+        <DateDisply className="col-2 p-0 pr-3" />
+        <HourControl
+          className="col-3 p-0"
+          onStartTimeChanged={this.props.onStartTimeChanged}
         />
-        <DateDisply />
-        <HourControl onStartTimeChanged={this.props.onStartTimeChanged} />
       </div>
     );
   }
@@ -309,13 +338,15 @@ class Meals extends React.Component {
     });
 
     return (
-      <div>
+      <div className="container">
         <MealFilters
           defaultAddress={this.props.defaultAddress}
           onStartTimeChanged={this.onStartTimeChangedCallback}
           onAddressChanged={this.onAddressChangedCallback}
         />
+        <div className="d-flex mt-5 flex-nowrap">
         {meal_components}
+        </div>
       </div>
     );
   }
@@ -358,23 +389,30 @@ class LandingPage extends React.Component {
   render() {
     return (
       <div class="landing-page-background row align-items-center justify-content-center mx-0">
-        <div class="d-flex flex-column justify-content-center">
-          <p>
-            Share a meal.
-          </p>
-          <p>
-            Near you.
-          </p>
-          <p>
-            For free.
-          </p>
-          <AddressControl onAddressChanged={this.onAddressChangedCallback} />
-          <button type="button" class="btn btn-primary btn-rounded" disabled={this.state.place === null} onClick={this.goToMeals}>
-            Find a Meal
+        <div className="d-flex flex-column justify-content-center input-group landing-page-controls">
+          <p>Share a meal.</p>
+          <p>Near you.</p>
+          <p>For free.</p>
+          <AddressControl
+            className="mc-input-text"
+            onAddressChanged={this.onAddressChangedCallback}
+          />
+          <button
+            type="button"
+            className="btn mc-btn-primary mc-primary-bg-color mb-3 input-group"
+            disabled={this.state.place === null}
+            onClick={this.goToMeals}
+          >
+            Find a meal
           </button>
-
-          <button type="button" class="btn btn-primary btn-rounded" disabled={this.state.place === null} onClick={this.goToHost}>
-            Make a Meal
+          <p id="or">Or</p>
+          <button
+            type="button"
+            className="btn mc-btn-primary mc-primary-bg-color mb-3 input-group"
+            disabled={this.state.place === null}
+            onClick={this.goToHost}
+          >
+            Make a meal
           </button>
         </div>
       </div>

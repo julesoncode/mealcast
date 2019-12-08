@@ -11,10 +11,27 @@
   font-style: normal;
 }
 
+.mc-primary-color {
+    color: rgb(251, 89, 96);
+}
+
+.mc-primary-bg-color {
+    background-color: rgb(251, 89, 96);
+}
+
+.mc-primary-color:disabled {
+    color: rgb(210, 89, 96);
+}
+
+.mc-primary-bg-color:disabled {
+    opacity: 80%;
+    background-color: rgb(210, 89, 96);
+}
+
 .logo {
     font-family: 'Vegan Style Personal Use Regular';
-    font-size: 32pt;
-    color: rgb(251, 89, 96);
+    font-size: 5vh;
+    
 }
 
 body {
@@ -28,11 +45,47 @@ body {
     background-size: cover;
     width: 100%;
     height: 45.18vw; /* 100 / 2.2128 (aspect ratio of the background image) */
+    max-height: 100vh;
     color: white;
 }
 
 .landing-page-background p {
     font-family: 'Futura-Medium';
     width: fit-content;
+    font-size: 5vh;
     margin-left: auto;
     margin-right: auto;
+}
+
+#or {
+    font-size: 18pt;
+}
+
+.landing-page-controls {
+    width: 30vw;
+}
+
+.mc-input-text {
+    font-family: "Futura-Medium";
+    font-size: 18pt;
+    line-height: 1.5;
+    margin-bottom: 1.5em;
+    justify-content: center;
+}
+
+.mc-input-text::placeholder {
+    color: rgb(200, 200, 200);
+}
+.mc-btn-primary {
+    justify-content: center;
+    font-family: "Futura-Medium";
+    font-size: 18pt;
+    line-height: 1.5;
+    margin-bottom: 1.5em;
+    padding: 0;
+    color: white;
+}
+
+.mc-root-container {
+    width: 80%;
+}
