@@ -463,22 +463,36 @@ class RegisterUser extends React.Component {
       this.state.phoneNumber === "" ||
       this.state.password === "" ||
       this.state.email === "";
+
+    var errorComponent = null;
+    if (this.state.errorMessage !== null) {
+      errorComponent = (
+        <div className="row">
+          <div className="col-12 p-2">
+            <span className="w-100 h-100 input-group-text mc-border-error mc-text-color-error mc-bg-color-error">
+              {this.state.errorMessage}
+            </span>
+          </div>
+        </div>
+      );
+    }
+
     return (
-      <div className="container border p-0">
+      <div className="container border m-0 p-0">
         <div className="container border-bottom">
           <div className="row">
             <h5 className="col-8 m-0 h-100 my-auto">Register</h5>
-            <div className="col-2 p-0">
+            <div className="col-2 p-2">
               <button
-                className="btn mc-primary-bg-color text-white form-control w-100"
+                className="btn form-control mc-btn-outline w-100"
                 onClick={() => this.props.onLoginRequested()}
               >
                 Login Instead
               </button>
             </div>
-            <div className="col-2 p-0">
+            <div className="col-2 p-2">
               <button
-                className="btn mc-primary-bg-color text-white form-control w-100"
+                className="btn form-control mc-button-regular w-100"
                 disabled={shouldDisableRegisterButton}
                 onClick={this.registerUser}
               >
@@ -553,6 +567,7 @@ class RegisterUser extends React.Component {
               />
             </div>
           </div>
+          {errorComponent}
         </div>
       </div>
     );
@@ -590,36 +605,68 @@ class LoginUser extends React.Component {
   render() {
     const shouldDisableLoginButton =
       this.state.email === "" || this.state.password === "";
-    return (
-      <div>
-        <div>
-          <button onClick={() => this.props.onRegisterRequested()}>
-            Register Instead
-          </button>
-          {/* TODO style error better  */}
-          {this.state.errorMessage}
+
+    var errorComponent = null;
+    if (this.state.errorMessage !== null) {
+      errorComponent = (
+        <div className="row">
+          <div className="col-12 p-2">
+            <span className="w-100 h-100 input-group-text mc-border-error mc-text-color-error mc-bg-color-error">
+              {this.state.errorMessage}
+            </span>
+          </div>
         </div>
-        <div>
-          <input
-            type="text"
-            name="email"
-            placeholder="Email"
-            value={this.state.phoneNumber}
-            onChange={this.handleChange}
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={this.state.password}
-            onChange={this.handleChange}
-          />
-          <button
-            disabled={shouldDisableLoginButton}
-            onClick={this.requestLogin}
-          >
-            Log In
-          </button>
+      );
+    }
+
+    return (
+      <div className="container border m-0 p-0">
+        <div className="container border-bottom">
+          <div className="row">
+            <h5 className="col-8 m-0 h-100 my-auto">Log In</h5>
+            <div className="col-2 p-2">
+              <button
+                className="btn form-control mc-btn-outline w-100"
+                onClick={() => this.props.onRegisterRequested()}
+              >
+                Register Instead
+              </button>
+            </div>
+            <div className="col-2 p-2">
+              <button
+                className="btn form-control mc-button-regular w-100"
+                disabled={shouldDisableLoginButton}
+                onClick={this.requestLogin}
+              >
+                Log In
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="mc-background-form container">
+          <div className="row">
+            <div className="col-6 p-2">
+              <input
+                className="form-control w-100"
+                type="text"
+                name="email"
+                placeholder="Email"
+                value={this.state.phoneNumber}
+                onChange={this.handleChange}
+              />
+            </div>
+            <div className="col-6 p-2">
+              <input
+                className="form-control w-100"
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={this.state.password}
+                onChange={this.handleChange}
+              />
+            </div>
+          </div>
+          {errorComponent}
         </div>
       </div>
     );
@@ -677,9 +724,22 @@ class UserInfo extends React.Component {
 
     if (this.state.current === "logged-in") {
       componentToRender = (
-        <div>
-          <span>Hello User {this.state.user.firstName}</span>
-          <button onClick={this.logOut}>Log Out</button>
+        <div className="container m-0 p-0">
+          <div className="container border">
+            <div className="row">
+              <h5 className="col-10 m-0 h-100 my-auto">
+                Hello {this.state.user.firstName}
+              </h5>
+              <div className="col-2 p-2">
+                <button
+                  className="btn form-control mc-button-regular w-100"
+                  onClick={this.logOut}
+                >
+                  Log Out
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       );
     } else if (this.state.current === "unauthenticated-register") {
@@ -697,10 +757,10 @@ class UserInfo extends React.Component {
         />
       );
     } else {
-      // We're waiting for the ajax query to get the user so don't show anything yet
+      componentToRender = <div></div>;
     }
 
-    return <div>{componentToRender}</div>;
+    return componentToRender;
   }
 }
 
@@ -737,25 +797,80 @@ class Reserve extends React.Component {
     // TODO handle failed meal query
     if (this.state.meal !== null) {
       meal_component = (
-        <div>
-          <div>Meal ID: {this.state.meal.meal_id}</div>
-          <div>Name: {this.state.meal.name}</div>
+        <div className="container py-2">
+          <div className="row">
+            <div className="col-8">
+              <div className="container"></div>
+              <h5>{this.state.meal.name}</h5>
+              <h6>Address: {this.state.meal.address}</h6>
+              <h6>
+                Pick up&nbsp;
+                {moment
+                  .utc(parseInt(this.state.meal.pickupTime * 1000))
+                  .local()
+                  .fromNow()}
+                &nbsp;(
+                {moment
+                  .utc(parseInt(this.state.meal.pickupTime) * 1000)
+                  .local()
+                  .format("MMM Do h:mm")}
+                )
+              </h6>
+              <pre className="mc-meal-description">
+                {this.state.meal.description}
+              </pre>
+              <div className="row">
+                <div className="col-12">
+                  <img className="w-100" src={this.state.meal.picture_url} />
+                </div>
+              </div>
+            </div>
+            <div className="col-4">
+              <div className="container">
+                <div className="row">
+                  <h5>Next Steps</h5>
+                </div>
+
+                <div className="row">You are about to reserve this meal!</div>
+
+                <div className="row">
+                  Check out the details on the left and make sure everything
+                  looks correct. Once you press the Reserve button your
+                  reservation will be confirmed. All you have to do is show and
+                  and show your host the confirmation page. Enjoy!
+                </div>
+                <form action="/reserve" method="POST" className="row mt-2">
+                  <input
+                    type="hidden"
+                    name="meal_id"
+                    value={
+                      this.state.meal === null ? "" : this.state.meal.meal_id
+                    }
+                  />
+                  <button
+                    className="btn form-control mc-button-regular w-100"
+                    disabled={this.state.user === null}
+                  >
+                    Reserve
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
       );
     }
     return (
-      <div className="container">
-        <UserInfo onUserResolved={this.setUser} />
-        <div>
-          {meal_component}
-          <form action="/reserve" method="POST">
-            <input
-              type="hidden"
-              name="meal_id"
-              value={this.state.meal === null ? "" : this.state.meal.meal_id}
-            />
-            <button disabled={this.state.user === null}>Reserve</button>
-          </form>
+      <div className="container p-0">
+        <div className="row">
+          <div className="col-12">
+            <UserInfo onUserResolved={this.setUser} />
+          </div>
+        </div>
+        <div className="row mt-2">
+          <div className="col-12">
+            <div className="border">{meal_component}</div>
+          </div>
         </div>
       </div>
     );
@@ -783,6 +898,7 @@ class Reservations extends React.Component {
 
   render() {
     var components = null;
+
     if (this.state.meal !== null) {
       const position = { lat: this.state.meal.lat, lng: this.state.meal.lng };
       components = (
@@ -791,19 +907,11 @@ class Reservations extends React.Component {
           <GoogleMap location={position} />
         </div>
       );
+    } else {
+      // TODO no meal
     }
-    // TODO print details
-    // if (this.state.reservation !== null) {
-    //
-    //   reservation_details = <div>{this.state.reservation.meal.name}</div>;
-    // }
 
-    return (
-      <div>
-        {components}
-        <a href="/">Go Home</a>
-      </div>
-    );
+    return components;
   }
 }
 

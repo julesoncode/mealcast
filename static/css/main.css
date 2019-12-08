@@ -86,8 +86,44 @@ body {
     color: white;
 }
 
+.mc-button-regular {
+    background-color: rgb(251, 89, 96);
+    color: white;
+    border: 1px solid rgb(251, 89, 96);
+}
+
+.mc-button-regular:disabled {
+    background-color: rgb(210, 89, 96);
+    color: rgb(220, 220, 220);
+    border: 1px solid rgb(251, 89, 96);
+}
+
+.mc-button-regular:focus {
+    background-color: rgb(255, 89, 96);
+    color: white;
+    border: 1px solid rgb(251, 89, 96);
+}
+
+.mc-btn-outline {
+    background-color: white;
+    border: 1px solid rgb(251, 89, 96);
+    color: rgb(251, 89, 96);
+}
+
 .mc-background-form {
     background-color: #e8e8e8
+}
+
+.mc-bg-color-error {
+    background-color: rgb(255, 176, 179);
+}
+
+.mc-text-color-error {
+    color: rgb(255, 62, 80);
+}
+
+.mc-border-error {
+    border: 1px solid rgb(255, 62, 80);
 }
 
 .mc-root-container {
@@ -102,4 +138,8 @@ body {
     width: 18rem;
     height: 11.3924050633rem;
     object-fit: cover;
+}
+
+.mc-meal-description {
+    white-space: pre-line;
 }

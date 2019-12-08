@@ -118,6 +118,7 @@ class Meal(db.Model):
             "name": self.name,
             "address": self.address,
             "pickupTime": self.pickup_time.timestamp(),
+            "description": self.description,
             "servings": self.servings,
             "lat": shape.y,
             "lng": shape.x,
