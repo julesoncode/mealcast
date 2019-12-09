@@ -690,7 +690,7 @@ class UserInfo extends React.Component {
   }
 
   getLoggedInUser() {
-    $.getJSON("api/user", null, user => {
+    $.getJSON("/api/user", null, user => {
       this.userRegisteredOrLoggedIn(user);
     }).fail(() => {
       this.setState({ current: "unauthenticated-register" });
@@ -1160,10 +1160,6 @@ class HostMealEvent extends React.Component {
     super(props);
   }
 
-  onClick = () => {
-    this.props.seeDetailsEvent(this.props.meal);
-  };
-
   getDetailsURL() {
     return (
       "/host/meal?" +
@@ -1253,26 +1249,75 @@ class HostMealDetails extends React.Component {
     });
   };
 
+  setUser = user => {
+    if (user === null) {
+      window.location = "/";
+    }
+  };
+
   render() {
     var mealDiv = null;
-    const guests = [];
-    if (this.state.meal !== null) {
-      mealDiv = <div>{this.state.meal.name}</div>;
 
+    if (this.state.meal !== null) {
+      const guests = [];
       this.state.meal.reservations.forEach(reservation => {
         guests.push(
-          <div>
-            <span>{reservation.user.firstName}</span>
-            <span>{reservation.user.lastName}</span>
-            <span>Phone Number:{reservation.user.phoneNumber}</span>
+          <div key={reservation.user.userID}>
+            <div>
+              {reservation.user.firstName}&nbsp;{reservation.user.lastName}
+            </div>
+            <div>Phone Number: {reservation.user.phoneNumber}</div>
           </div>
         );
       });
+
+      mealDiv = (
+        <div className="row border mt-2">
+          <div className="col-6 p-2">
+            <h5>{this.state.meal.name}</h5>
+            <h6>Address: {this.state.meal.address}</h6>
+            <h6>
+              Pick up&nbsp;
+              {moment
+                .utc(parseInt(this.state.meal.pickupTime * 1000))
+                .local()
+                .fromNow()}
+              &nbsp;(
+              {moment
+                .utc(parseInt(this.state.meal.pickupTime) * 1000)
+                .local()
+                .format("MMM Do h:mm")}
+              )
+            </h6>
+            <pre className="mc-meal-description">
+              {this.state.meal.description}
+            </pre>
+            <img className="w-100" src={this.state.meal.picture_url} />
+          </div>
+          <div className="col-6 p-2">
+            <h5>Reservation Information</h5>
+            Confirmed reservations {this.state.meal.reservations.length} /{" "}
+            {this.state.meal.servings}
+            <h5 className="py-2">Guest Information</h5>
+            {guests}
+          </div>
+        </div>
+      );
     }
+
     return (
-      <div>
+      <div className="container">
+        <div className="row p-0">
+          <div className="col-12 p-0">
+            <UserInfo onUserResolved={this.setUser} />
+          </div>
+        </div>
+        <div className="row border mt-2">
+          <div className="col-12 p-2">
+            <h5>Meal event information</h5>
+          </div>
+        </div>
         {mealDiv}
-        {guests}
       </div>
     );
   }
