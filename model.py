@@ -124,6 +124,7 @@ class Meal(db.Model):
             "lng": shape.x,
             "picture_url": self.picture_url,
             "reservations": serialized_reservations,
+            "hostPhoneNumber": self.user.phone_number,
             "distance": 5000,
         }
 

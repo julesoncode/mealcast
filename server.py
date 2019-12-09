@@ -164,7 +164,10 @@ def reservation_api():
     if reservation is None:
         abort(404)
 
-    return jsonify(reservation.serialize())
+    serialized_meal = reservation.serialize()
+    serialized_meal["userPhoneNumber"] = user.phone_number
+
+    return jsonify(serialized_meal)
 
 @app.route("/api/meal_events", methods=["GET"])
 def meal_events_api():

@@ -29,9 +29,7 @@ class GoogleMap extends React.Component {
   }
 
   render() {
-    return (
-      <div ref={this.myRef} style={{ height: 400 + "px", width: 400 + "px" }} />
-    );
+    return <div ref={this.myRef} className="w-100 mc-google-map" />;
   }
 }
 
@@ -724,19 +722,21 @@ class UserInfo extends React.Component {
 
     if (this.state.current === "logged-in") {
       componentToRender = (
-        <div className="container m-0 p-0">
-          <div className="container border">
-            <div className="row">
-              <h5 className="col-10 m-0 h-100 my-auto">
-                Hello {this.state.user.firstName}
-              </h5>
-              <div className="col-2 p-2">
-                <button
-                  className="btn form-control mc-button-regular w-100"
-                  onClick={this.logOut}
-                >
-                  Log Out
-                </button>
+        <div className="container">
+          <div className="row">
+            <div className="container border">
+              <div className="row">
+                <h5 className="col-10 m-0 h-100 my-auto">
+                  Hello {this.state.user.firstName}
+                </h5>
+                <div className="col-2 p-2">
+                  <button
+                    className="btn form-control mc-button-regular w-100"
+                    onClick={this.logOut}
+                  >
+                    Log Out
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -891,10 +891,20 @@ class Reservations extends React.Component {
   }
 
   queryReservations() {
-    $.getJSON("/api/reservations").done(meal => {
-      this.setState({ meal: meal });
-    });
+    $.getJSON("/api/reservations")
+      .done(meal => {
+        this.setState({ meal: meal });
+      })
+      .fail(() => {
+        window.location = "/";
+      });
   }
+
+  setUser = user => {
+    if (user === null) {
+      window.location = "/";
+    }
+  };
 
   render() {
     var components = null;
@@ -902,9 +912,48 @@ class Reservations extends React.Component {
     if (this.state.meal !== null) {
       const position = { lat: this.state.meal.lat, lng: this.state.meal.lng };
       components = (
-        <div>
-          <div>TODO show rest of details</div>
-          <GoogleMap location={position} />
+        <div className="container">
+          <div className="row">
+            <div className="col-12 p-0">
+              <UserInfo onUserResolved={this.setUser} />
+            </div>
+          </div>
+          <div className="row border mt-2">
+            <div className="col-12 p-2">
+              <h5>Your meal reservation</h5>
+            </div>
+          </div>
+          <div className="row border mt-2">
+            <div className="col-6 p-2">
+              <h5>{this.state.meal.name}</h5>
+              <h6>Address: {this.state.meal.address}</h6>
+              <h6>
+                Pick up&nbsp;
+                {moment
+                  .utc(parseInt(this.state.meal.pickupTime * 1000))
+                  .local()
+                  .fromNow()}
+                &nbsp;(
+                {moment
+                  .utc(parseInt(this.state.meal.pickupTime) * 1000)
+                  .local()
+                  .format("MMM Do h:mm")}
+                )
+              </h6>
+              <pre className="mc-meal-description">
+                {this.state.meal.description}
+              </pre>
+              <img className="w-100" src={this.state.meal.picture_url} />
+            </div>
+            <div className="col-6 p-2">
+              <h5>
+                Show this information to your host to confirm your identity
+              </h5>
+              <h6>Host Phone Number {this.state.meal.hostPhoneNumber}</h6>
+              <h6>Your Phone Number {this.state.meal.userPhoneNumber}</h6>
+              <GoogleMap location={position} />
+            </div>
+          </div>
         </div>
       );
     } else {
@@ -977,14 +1026,6 @@ class MakeMeal extends React.Component {
     this.setState({ [event.target.name]: event.target.value });
   };
 
-  onSeeDetails = meal => {
-    window.location =
-      "/host/meal?" +
-      $.param({
-        meal_id: meal.meal_id
-      });
-  };
-
   render = () => {
     const disableMakeMealButton =
       this.state.mealName === "" ||
@@ -997,76 +1038,115 @@ class MakeMeal extends React.Component {
     const previousMeals = [];
 
     this.state.upcomingMeals.forEach(meal => {
-      upcomingMeals.push(
-        <HostMealEvent
-          key={meal.meal_id}
-          meal={meal}
-          seeDetailsEvent={this.onSeeDetails}
-        />
-      );
+      upcomingMeals.push(<HostMealEvent key={meal.meal_id} meal={meal} />);
     });
 
     this.state.previousMeals.forEach(meal => {
-      previousMeals.push(
-        <HostMealEvent
-          key={meal.meal_id}
-          meal={meal}
-          seeDetailsEvent={this.onSeeDetails}
-        />
-      );
+      previousMeals.push(<HostMealEvent key={meal.meal_id} meal={meal} />);
     });
 
     return (
-      <div>
-        <UserInfo onUserResolved={this.setUser} />
-        <div>
-          Current Meals:
-          {upcomingMeals}
-        </div>
-        <AddressControl
-          defaultAddress={this.defaultAddress}
-          onAddressChanged={this.onAddressChangedCallback}
-        />
-        <span>
-          Pickup time
-          <HourControl onStartTimeChanged={this.onStartTimeChangedCallback} />
-        </span>
-        <form action="/host" method="POST" encType="multipart/form-data">
-          <input type="hidden" name="hour" value={this.state.hour} />
-          <input type="hidden" name="minute" value={this.state.minute} />
-          <input type="hidden" name="address" value={this.state.address} />
-          <input type="hidden" name="lat" value={this.state.lat} />
-          <input type="hidden" name="lng" value={this.state.lng} />
-          <input
-            type="text"
-            name="mealName"
-            placeholder="Title"
-            value={this.state.mealName}
-            onChange={this.handleChange}
-          />
-          <input
-            type="text"
-            name="mealDescription"
-            placeholder="Description"
-            value={this.state.mealDescription}
-            onChange={this.handleChange}
-          />
-          <input type="file" name="file" accept="image/jpeg" />
-          <input
-            type="text"
-            name="mealServings"
-            placeholder="Servings"
-            value={this.state.mealServings}
-            onChange={this.handleChange}
-          />
-          <button disabled={disableMakeMealButton}>Cast your meal!</button>
-        </form>
-        <div>
-          <div>
-            Previous Meals:
-            {previousMeals}
+      <div className="container">
+        <div className="row p-0">
+          <div className="col-12 p-0">
+            <UserInfo onUserResolved={this.setUser} />
           </div>
         </div>
+        <HostMealList meals={upcomingMeals} time_label="Upcoming" />
+        <div className="row mt-2">
+          <div className="col-12 border py-2">
+            <div className="container mt-2">
+              <div className="row form-inline">
+                <div className="input-group col-9">
+                  <div className="input-group-prepend">
+                    <span className="input-group-text">Where</span>
+                  </div>
+                  <AddressControl
+                    className="form-control"
+                    defaultAddress={this.defaultAddress}
+                    onAddressChanged={this.onAddressChangedCallback}
+                  />
+                </div>
+
+                <HourControl
+                  className="col-3"
+                  onStartTimeChanged={this.onStartTimeChangedCallback}
+                />
+              </div>
+
+              <form action="/host" method="POST" encType="multipart/form-data">
+                <input type="hidden" name="hour" value={this.state.hour} />
+                <input type="hidden" name="minute" value={this.state.minute} />
+                <input
+                  type="hidden"
+                  name="address"
+                  value={this.state.address}
+                />
+                <input type="hidden" name="lat" value={this.state.lat} />
+                <input type="hidden" name="lng" value={this.state.lng} />
+
+                <div className="row form-inline mt-2">
+                  <div className="input-group col-6">
+                    <div className="input-group-prepend">
+                      <span className="input-group-text">Title</span>
+                    </div>
+                    <input
+                      className="form-control"
+                      type="text"
+                      name="mealName"
+                      placeholder="Title"
+                      value={this.state.mealName}
+                      onChange={this.handleChange}
+                    />
+                  </div>
+                  <div className="input-group col-3">
+                    <div className="input-group-prepend">
+                      <span className="input-group-text">Servings</span>
+                    </div>
+                    <input
+                      className="form-control"
+                      type="text"
+                      name="mealServings"
+                      placeholder="Servings"
+                      value={this.state.mealServings}
+                      onChange={this.handleChange}
+                    />
+                  </div>
+                  <input
+                    className="form-control-file col-3"
+                    type="file"
+                    name="file"
+                    accept="image/jpeg"
+                  />
+                </div>
+                <div className="row form-inline mt-2">
+                  <div className="col-12">
+                    <textarea
+                      className="form-control w-100"
+                      name="mealDescription"
+                      rows="10"
+                      placeholder="Description"
+                      value={this.state.mealDescription}
+                      onChange={this.handleChange}
+                    />
+                  </div>
+                </div>
+                <div className="row form-inline mt-2">
+                  <div className="col-9"></div>
+                  <div className="col-3">
+                    <button
+                      className="btn form-control mc-button-regular w-100"
+                      disabled={disableMakeMealButton}
+                    >
+                      Cast your meal!
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <HostMealList meals={previousMeals} time_label="Previous" />
       </div>
     );
   };
@@ -1084,28 +1164,69 @@ class HostMealEvent extends React.Component {
     this.props.seeDetailsEvent(this.props.meal);
   };
 
+  getDetailsURL() {
+    return (
+      "/host/meal?" +
+      $.param({
+        meal_id: this.props.meal.meal_id
+      })
+    );
+  }
   render() {
     return (
-      <div>
-        <span>Name: {this.props.meal.name}</span>
-        <span>
-          {" "}
-          Date:{" "}
-          {moment
-            .utc(parseInt(this.props.meal.pickupTime) * 1000)
-            .local()
-            .format("MMM Do h:mm")}
-        </span>
-        <span>
-          {" "}
-          Confirmed Reservations: {this.props.meal.reservations.length}/
-          {this.props.meal.servings}
-        </span>
-        <img
-          src={this.props.meal.pictureURL}
-          style={{ width: 256 + "px", height: "auto", "max-width": 100 + "%" }}
-        />
-        <button onClick={this.onClick}>See Details</button>
+      <div className="row mb-2">
+        <div className="col-12">
+          <div className="container">
+            <div className="row border p-2">
+              <div className="col-1 p-0">
+                <img
+                  className="mc-host-detail-thumbnail"
+                  src={this.props.meal.picture_url}
+                />
+              </div>
+              <div className="col-11 p-0">
+                <div className="container h-100">
+                  <div className="row h-50 ">
+                    <div className="col-6">
+                      <span className="align-middle">
+                        Name: {this.props.meal.name}
+                      </span>
+                    </div>
+                    <div className="col-3">
+                      <span className="align-middle">
+                        {moment
+                          .utc(parseInt(this.props.meal.pickupTime) * 1000)
+                          .local()
+                          .format("MMM Do h:mm")}
+                      </span>
+                    </div>
+                    <div className="col-3 text-right">
+                      <span className="align-middle ">
+                        Confirmed reservations{" "}
+                        {this.props.meal.reservations.length} /{" "}
+                        {this.props.meal.servings}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="row h-50">
+                    <div className="col-8">
+                      <span className="align-middle">
+                        Address: {this.props.meal.address}
+                      </span>
+                    </div>
+                    <div className="col-4 text-right">
+                      <span className="align-middle">
+                        <a href={this.getDetailsURL()} className="mc-link">
+                          See details
+                        </a>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -1154,5 +1275,41 @@ class HostMealDetails extends React.Component {
         {guests}
       </div>
     );
+  }
+}
+
+class HostMealList extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    if (this.props.meals.length > 0) {
+      return (
+        <div className="row mt-2 border pt-2">
+          <div className="container">
+            <div className="row">
+              <div className="col-12">
+                <h5>{this.props.time_label} meals</h5>
+              </div>
+            </div>
+            {this.props.meals}
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="row mt-2 border pt-2">
+          <h5 className="col-10 m-0 h-100 my-auto">
+            No {this.props.time_label} meals
+          </h5>
+          <div className="col-2 p-2">
+            <button className="btn form-control mc-button-regular w-100 invisible">
+              Placeholder for sizing
+            </button>
+          </div>
+        </div>
+      );
+    }
   }
 }
